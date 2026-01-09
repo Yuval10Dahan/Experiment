@@ -1,0 +1,776 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Psychological Experiment</title>
+    <style>
+      body {
+        font-family: Arial;
+        padding: 20px;
+      }
+
+      /* IMPORTANT FIX: always hide, even if other classes set display:flex */
+      .hidden {
+        display: none !important;
+      }
+
+      /* ---------- CENTERED PAGES (Consent/Demo/Rep/Rate/Done) ---------- */
+      .centerPage {
+        display: flex;
+        align-items: center; /* vertical */
+        justify-content: center; /* horizontal */
+        min-height: calc(100vh - 40px); /* account for body padding */
+      }
+      .centerBox {
+        text-align: center;
+        width: min(560px, 100%);
+      }
+      .centerBox .stack {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 10px;
+        margin-top: 14px;
+      }
+
+      /* ---------- TASKS ---------- */
+      #tasks {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        margin-top: 8px;
+        margin-bottom: 10px;
+        align-items: flex-start;
+      }
+
+      .task {
+        display: inline-block;
+        width: fit-content;
+        max-width: 100%;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+
+        padding: 10px 14px;
+        background: #eee;
+        border: 1px solid #ccc;
+        cursor: grab;
+        border-radius: 6px;
+        user-select: none;
+      }
+
+      /* ---------- SLOTS / GRID DAY VIEW ---------- */
+      .dayGrid {
+        display: grid;
+        grid-template-columns: repeat(5, minmax(160px, 1fr));
+        gap: 12px;
+        margin-top: 10px;
+      }
+
+      @media (max-width: 1100px) {
+        .dayGrid {
+          grid-template-columns: repeat(3, minmax(160px, 1fr));
+        }
+      }
+      @media (max-width: 700px) {
+        .dayGrid {
+          grid-template-columns: repeat(2, minmax(150px, 1fr));
+        }
+      }
+
+      .slot {
+        border: 1px dashed #999;
+        min-height: 110px;
+        padding: 10px;
+        border-radius: 8px;
+        background: #fff;
+      }
+
+      .slotHeader {
+        font-weight: 700;
+        margin-bottom: 8px;
+      }
+
+      .slot .task {
+        white-space: normal;
+        width: auto;
+        max-width: 100%;
+        margin: 6px 0 0 0;
+        cursor: grab;
+      }
+
+      /* ---------- STRESS BANNER (BOTTOM, DOESN'T HIDE SCHEDULE) ---------- */
+      #stress {
+        position: fixed;
+        left: 50%;
+        bottom: 26px;
+        transform: translateX(-50%);
+
+        width: min(760px, calc(100vw - 40px));
+        padding: 14px 18px;
+
+        display: none;
+        align-items: center;
+        justify-content: center;
+
+        font-size: 20px;
+        font-weight: 800;
+        text-align: center;
+
+        background: rgba(255, 80, 80, 0.22);
+        border: 2px solid rgba(180, 0, 0, 0.25);
+        border-radius: 999px;
+
+        z-index: 9999;
+        pointer-events: none;
+      }
+
+      @keyframes stressPulse {
+        0% {
+          transform: translateX(-50%) scale(1);
+        }
+        50% {
+          transform: translateX(-50%) scale(1.03);
+        }
+        100% {
+          transform: translateX(-50%) scale(1);
+        }
+      }
+
+      #stress.show {
+        display: flex;
+        animation: stressPulse 0.9s ease-in-out infinite;
+      }
+
+      /* ---------- NON-BLOCKING MODAL (REPLACES alert) ---------- */
+      #msgModal {
+        position: fixed;
+        inset: 0;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        z-index: 10050; /* above stress banner */
+      }
+      #msgModal.show {
+        display: flex;
+      }
+      #msgBackdrop {
+        position: absolute;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.35);
+      }
+      #msgBox {
+        position: relative;
+        width: min(520px, calc(100vw - 40px));
+        background: #fff;
+        border-radius: 12px;
+        padding: 18px 18px 14px;
+        box-shadow: 0 10px 28px rgba(0, 0, 0, 0.25);
+        text-align: center;
+      }
+      #msgText {
+        font-size: 15px;
+        margin: 0 0 10px 0;
+      }
+      #msgOkBtn {
+        padding: 9px 18px;
+        margin-top: 6px;
+      }
+
+      button {
+        padding: 10px 20px;
+        margin-top: 16px;
+      }
+
+      input[type="text"],
+      input[type="number"] {
+        padding: 10px;
+        width: 260px;
+        max-width: 100%;
+      }
+
+      label {
+        font-size: 16px;
+      }
+
+      .btnRow {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        margin-top: 10px;
+      }
+
+      .muted {
+        opacity: 0.7;
+        font-size: 13px;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div id="stress">⚠ PLEASE FINISH AS FAST AS POSSIBLE ⚠</div>
+
+    <!-- NON-BLOCKING MODAL -->
+    <div id="msgModal" class="hidden">
+      <div id="msgBackdrop"></div>
+      <div id="msgBox">
+        <p id="msgText"></p>
+        <button id="msgOkBtn" type="button">OK</button>
+      </div>
+    </div>
+
+    <!-- CONSENT (CENTERED) -->
+    <div id="consent" class="centerPage">
+      <div class="centerBox">
+        <h2>Consent</h2>
+        <p>I agree to participate in this study.</p>
+        <button onclick="start()">I Agree</button>
+      </div>
+    </div>
+
+    <!-- DEMOGRAPHICS (CENTERED) -->
+    <div id="demo" class="hidden centerPage">
+      <div class="centerBox">
+        <h2>Demographics</h2>
+
+        <div class="stack">
+          <input
+            id="ageInput"
+            type="number"
+            placeholder="Age (18-99)"
+            min="18"
+            max="99"
+          />
+
+          <input
+            id="genderInput"
+            type="text"
+            placeholder="Gender (Male/Female)"
+          />
+
+          <button onclick="submitDemo()">Next</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- REPRESSION (CENTERED) -->
+    <div id="rep" class="hidden centerPage">
+      <div class="centerBox">
+        <h2>Repression Questionnaire</h2>
+
+        <div class="stack" style="align-items: stretch">
+          <div
+            id="repProgress"
+            style="font-size: 14px; opacity: 0.8; text-align: center"
+          ></div>
+
+          <div
+            id="repQuestion"
+            style="font-size: 20px; font-weight: 600; text-align: center"
+          ></div>
+
+          <div
+            id="repOptions"
+            style="
+              display: flex;
+              gap: 12px;
+              flex-wrap: wrap;
+              justify-content: center;
+            "
+          >
+            <label><input type="radio" name="repScore" value="1" /> 1</label>
+            <label><input type="radio" name="repScore" value="2" /> 2</label>
+            <label><input type="radio" name="repScore" value="3" /> 3</label>
+            <label><input type="radio" name="repScore" value="4" /> 4</label>
+            <label><input type="radio" name="repScore" value="5" /> 5</label>
+          </div>
+
+          <div
+            id="repError"
+            style="color: #b00020; display: none; text-align: center"
+          >
+            Please select a score (1–5) to continue.
+          </div>
+
+          <button onclick="repNext()">Next</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- EXPERIMENT -->
+    <div id="exp" class="hidden">
+      <h2>Daily Schedule</h2>
+
+      <h4>Tasks</h4>
+      <div class="muted">
+        Drag tasks into a time slot. Total per slot must be ≤ 60 minutes.
+      </div>
+
+      <div id="tasks">
+        <div class="task" draggable="true" data-task-id="t1" data-minutes="30">
+          Reply to urgent email (30 min)
+        </div>
+        <div class="task" draggable="true" data-task-id="t2" data-minutes="20">
+          Prepare daily report (20 min)
+        </div>
+        <div class="task" draggable="true" data-task-id="t3" data-minutes="15">
+          Schedule meeting (15 min)
+        </div>
+      </div>
+
+      <div class="btnRow">
+        <button onclick="resetSchedule()">Reset schedule</button>
+        <button onclick="submitExperiment()">Finish Tasks</button>
+      </div>
+
+      <h4 style="margin-top: 20px">Day</h4>
+
+      <div class="dayGrid">
+        <div
+          class="slot"
+          data-time="08:00"
+          ondragover="allow(event)"
+          ondrop="drop(event)"
+        >
+          <div class="slotHeader">08:00</div>
+        </div>
+        <div
+          class="slot"
+          data-time="09:00"
+          ondragover="allow(event)"
+          ondrop="drop(event)"
+        >
+          <div class="slotHeader">09:00</div>
+        </div>
+        <div
+          class="slot"
+          data-time="10:00"
+          ondragover="allow(event)"
+          ondrop="drop(event)"
+        >
+          <div class="slotHeader">10:00</div>
+        </div>
+        <div
+          class="slot"
+          data-time="11:00"
+          ondragover="allow(event)"
+          ondrop="drop(event)"
+        >
+          <div class="slotHeader">11:00</div>
+        </div>
+        <div
+          class="slot"
+          data-time="12:00"
+          ondragover="allow(event)"
+          ondrop="drop(event)"
+        >
+          <div class="slotHeader">12:00</div>
+        </div>
+        <div
+          class="slot"
+          data-time="13:00"
+          ondragover="allow(event)"
+          ondrop="drop(event)"
+        >
+          <div class="slotHeader">13:00</div>
+        </div>
+        <div
+          class="slot"
+          data-time="14:00"
+          ondragover="allow(event)"
+          ondrop="drop(event)"
+        >
+          <div class="slotHeader">14:00</div>
+        </div>
+        <div
+          class="slot"
+          data-time="15:00"
+          ondragover="allow(event)"
+          ondrop="drop(event)"
+        >
+          <div class="slotHeader">15:00</div>
+        </div>
+        <div
+          class="slot"
+          data-time="16:00"
+          ondragover="allow(event)"
+          ondrop="drop(event)"
+        >
+          <div class="slotHeader">16:00</div>
+        </div>
+        <div
+          class="slot"
+          data-time="17:00"
+          ondragover="allow(event)"
+          ondrop="drop(event)"
+        >
+          <div class="slotHeader">17:00</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- STRESS RATING (CENTERED) -->
+    <div id="rate" class="hidden centerPage">
+      <div class="centerBox">
+        <h2>Stress Level (1–10)</h2>
+
+        <div class="stack">
+          <input id="stressRating" type="number" min="1" max="10" />
+
+          <div id="rateError" style="color: #b00020; display: none">
+            Please choose a number between 1 and 10.
+          </div>
+
+          <button onclick="finish()">Submit</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- DONE (CENTERED) -->
+    <div id="done" class="hidden centerPage">
+      <div class="centerBox">
+        <h2>Thank you very much!</h2>
+        <p>You may now close this page.</p>
+      </div>
+    </div>
+
+    <script>
+      let pid = null;
+      let stress = 0;
+
+      // Stress banner only starts when Daily Schedule begins
+      let stressStarted = false;
+
+      // ---- LOOPING SOUND state ----
+      let audioCtx = null;
+      let beepTimer = null;
+      let beepingActive = false;
+
+      function ensureAudio() {
+        const Ctx = window.AudioContext || window.webkitAudioContext;
+        if (!audioCtx && Ctx) audioCtx = new Ctx();
+        if (audioCtx && audioCtx.state === "suspended") {
+          audioCtx.resume().catch(() => {});
+        }
+      }
+
+      function playOneBeep() {
+        ensureAudio();
+        if (!audioCtx) return;
+
+        const now = audioCtx.currentTime;
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+
+        osc.type = "square";
+        osc.frequency.setValueAtTime(650, now);
+        osc.frequency.exponentialRampToValueAtTime(1250, now + 0.12);
+
+        gain.gain.setValueAtTime(0.0001, now);
+        gain.gain.exponentialRampToValueAtTime(0.18, now + 0.02);
+        gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.16);
+
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+
+        osc.start(now);
+        osc.stop(now + 0.18);
+      }
+
+      function startBeepLoop() {
+        if (beepingActive) return;
+        beepingActive = true;
+        playOneBeep();
+        beepTimer = setInterval(playOneBeep, 1300);
+      }
+
+      function stopBeepLoop() {
+        beepingActive = false;
+        if (beepTimer) {
+          clearInterval(beepTimer);
+          beepTimer = null;
+        }
+      }
+
+      // ---------- NON-BLOCKING MESSAGE ----------
+      function showMsg(text) {
+        const modal = document.getElementById("msgModal");
+        const txt = document.getElementById("msgText");
+        txt.innerText = text;
+
+        modal.classList.remove("hidden");
+        modal.classList.add("show");
+
+        // focus OK for quick enter
+        document.getElementById("msgOkBtn").focus();
+      }
+
+      function hideMsg() {
+        const modal = document.getElementById("msgModal");
+        modal.classList.remove("show");
+        modal.classList.add("hidden");
+      }
+
+      document.addEventListener("DOMContentLoaded", () => {
+        document.getElementById("msgOkBtn").addEventListener("click", () => {
+          ensureAudio(); // user gesture helps keep audio unlocked
+          hideMsg();
+        });
+
+        // clicking backdrop closes too (optional)
+        document.getElementById("msgBackdrop").addEventListener("click", () => {
+          ensureAudio();
+          hideMsg();
+        });
+      });
+
+      // Repression questionnaire
+      const repQuestions = Array.from({ length: 1 }, (_, i) => `Q${i + 1}`);
+      let repIndex = 0;
+      let repAnswers = [];
+
+      function wireTaskDragHandlers() {
+        document.querySelectorAll(".task").forEach((el) => {
+          el.addEventListener("dragstart", (e) => {
+            ensureAudio();
+            e.dataTransfer.setData("text/plain", el.dataset.taskId);
+          });
+        });
+      }
+
+      function showStress() {
+        document.getElementById("stress").classList.add("show");
+        startBeepLoop();
+      }
+
+      function hideStress() {
+        document.getElementById("stress").classList.remove("show");
+        stopBeepLoop();
+      }
+
+      function startStressIfNeeded() {
+        if (!stress) return;
+        if (stressStarted) return;
+        stressStarted = true;
+
+        const delayMs = 5000 + Math.floor(Math.random() * 20000);
+        setTimeout(() => {
+          const expVisible = !document
+            .getElementById("exp")
+            .classList.contains("hidden");
+          if (expVisible) showStress();
+        }, delayMs);
+      }
+
+      function start() {
+        ensureAudio();
+        fetch("/start", { method: "POST" })
+          .then((r) => r.json())
+          .then((d) => {
+            pid = d.participant_id;
+            stress = d.stress_condition;
+            show("demo");
+          });
+      }
+
+      function show(id) {
+        const pages = ["consent", "demo", "rep", "exp", "rate", "done"];
+        pages.forEach((p) =>
+          document.getElementById(p).classList.add("hidden")
+        );
+        document.getElementById(id).classList.remove("hidden");
+
+        if (id === "exp") {
+          wireTaskDragHandlers();
+          startStressIfNeeded();
+        }
+
+        // stress must stop only when moving to rate/done
+        if (id === "rate" || id === "done") {
+          hideStress();
+        }
+      }
+
+      function submitDemo() {
+        const ageInput = document.getElementById("ageInput");
+        const genderInput = document.getElementById("genderInput");
+
+        const age = Number(ageInput.value.trim());
+        const gender = genderInput.value.trim().toLowerCase();
+
+        if (!Number.isInteger(age) || age < 18 || age > 99) {
+          alert("Please enter a valid age between 18 and 99.");
+          ageInput.focus();
+          return;
+        }
+
+        if (gender !== "male" && gender !== "female") {
+          alert("Please enter gender as Male or Female.");
+          genderInput.focus();
+          return;
+        }
+
+        fetch(`/save/demo`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ participant_id: pid, data: { age, gender } }),
+        });
+
+        show("rep");
+        initRepression();
+      }
+
+      function initRepression() {
+        repIndex = 0;
+        repAnswers = [];
+        renderRepQuestion();
+      }
+
+      function renderRepQuestion() {
+        document.getElementById("repError").style.display = "none";
+        document.getElementById("repProgress").innerText = `Question ${
+          repIndex + 1
+        } of ${repQuestions.length}`;
+        document.getElementById("repQuestion").innerText =
+          repQuestions[repIndex];
+        document
+          .querySelectorAll("input[name='repScore']")
+          .forEach((r) => (r.checked = false));
+      }
+
+      function repNext() {
+        const selected = document.querySelector(
+          "input[name='repScore']:checked"
+        );
+        if (!selected) {
+          document.getElementById("repError").style.display = "block";
+          return;
+        }
+
+        repAnswers.push({
+          qIndex: repIndex + 1,
+          question: repQuestions[repIndex],
+          score: parseInt(selected.value, 10),
+        });
+
+        repIndex++;
+
+        if (repIndex < repQuestions.length) {
+          renderRepQuestion();
+        } else {
+          fetch(`/save/rep`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ participant_id: pid, data: repAnswers }),
+          });
+
+          show("exp");
+        }
+      }
+
+      function allow(e) {
+        e.preventDefault();
+      }
+
+      function getTaskMinutes(taskEl) {
+        const m = Number(taskEl.dataset.minutes || "0");
+        return Number.isFinite(m) ? m : 0;
+      }
+
+      function sumMinutesInSlot(slotEl) {
+        return Array.from(slotEl.querySelectorAll(".task")).reduce(
+          (sum, t) => sum + getTaskMinutes(t),
+          0
+        );
+      }
+
+      function drop(e) {
+        e.preventDefault();
+
+        const taskId = e.dataTransfer.getData("text/plain");
+        if (!taskId) return;
+
+        const taskEl = document.querySelector(
+          `.task[data-task-id="${taskId}"]`
+        );
+        if (!taskEl) return;
+
+        const slotEl = e.target.closest(".slot");
+        if (!slotEl) return;
+
+        const slotTotal = sumMinutesInSlot(slotEl);
+        const taskMinutes = getTaskMinutes(taskEl);
+
+        if (slotTotal + taskMinutes > 60) {
+          alert(
+            `This time slot would exceed 60 minutes.\nCurrent: ${slotTotal} min, task: ${taskMinutes} min.`
+          );
+          return;
+        }
+
+        slotEl.appendChild(taskEl);
+      }
+
+      function resetSchedule() {
+        const tasksContainer = document.getElementById("tasks");
+        document
+          .querySelectorAll(".task")
+          .forEach((t) => tasksContainer.appendChild(t));
+      }
+
+      function submitExperiment() {
+        const remaining = document.querySelectorAll("#tasks .task").length;
+        if (remaining > 0) {
+          // NON-BLOCKING: sound keeps playing even while modal is open
+          showMsg("Please place all tasks into the schedule before finishing.");
+          return;
+        }
+
+        const slots = Array.from(document.querySelectorAll("#exp .slot"));
+        const schedule = slots.map((slot) => {
+          const time = slot.dataset.time || "unknown";
+          const tasks = Array.from(slot.querySelectorAll(".task")).map((t) => ({
+            id: t.dataset.taskId,
+            text: t.innerText.trim(),
+            minutes: getTaskMinutes(t),
+          }));
+          const totalMinutes = tasks.reduce((s, t) => s + t.minutes, 0);
+          return { time, tasks, totalMinutes };
+        });
+
+        fetch(`/save/exp`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ participant_id: pid, data: { schedule } }),
+        });
+
+        show("rate");
+      }
+
+      function finish() {
+        const rating = Number(
+          document.getElementById("stressRating").value.trim()
+        );
+        if (!rating || rating < 1 || rating > 10) {
+          document.getElementById("rateError").style.display = "block";
+          return;
+        }
+        document.getElementById("rateError").style.display = "none";
+
+        fetch(`/save/rating`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ participant_id: pid, data: { rating } }),
+        });
+
+        fetch("/finish", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ participant_id: pid }),
+        });
+
+        show("done");
+      }
+    </script>
+  </body>
+</html>
