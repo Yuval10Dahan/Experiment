@@ -10,7 +10,7 @@ import datetime
 
 app = FastAPI()
 
-# Allow browser requests freely (fine for local/simple experiment)
+# Allow browser requests freely (fine for simple experiment)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -25,7 +25,6 @@ DB = "experiment.db"
 
 
 def db():
-    # check_same_thread=False helps sometimes on Windows with reload + SQLite
     return sqlite3.connect(DB, check_same_thread=False)
 
 
@@ -34,8 +33,16 @@ with db() as con:
     con.execute("""
     CREATE TABLE IF NOT EXISTS experiment_results (
         participant_id TEXT PRIMARY KEY,
+
+        consent_given INTEGER,   -- 1 = agree, 0 = disagree
+
+        speak_english TEXT,      -- "yes"/"no"
         age INTEGER,
-        gender TEXT,
+        gender TEXT,             -- "male"/"female"/"other"
+        residence TEXT,          -- "north"/"central"/"south"
+        socioeconomic TEXT,      -- "low"/"medium"/"high"
+        marital_status TEXT,     -- "single"/"married"
+        education TEXT,          -- "until_high_school"/"high_school"/"ba"/"masters_or_higher"
 
         repression_q1  INTEGER,
         repression_q2  INTEGER,
@@ -100,6 +107,31 @@ def ensure_participant_exists(con, participant_id: str):
         raise HTTPException(status_code=404, detail="participant_id not found")
 
 
+@app.post("/save/consent")
+async def save_consent(req: Request):
+    body = await req.json()
+    participant_id = body.get("participant_id")
+    data = body.get("data") or {}
+
+    if not participant_id:
+        raise HTTPException(status_code=400, detail="Missing participant_id")
+
+    consent_given = data.get("consent_given")
+    if consent_given not in (0, 1):
+        raise HTTPException(status_code=400, detail="consent_given must be 0 or 1")
+
+    with db() as con:
+        ensure_participant_exists(con, participant_id)
+
+        con.execute(
+            "UPDATE experiment_results SET consent_given=? WHERE participant_id=?",
+            (consent_given, participant_id),
+        )
+        con.commit()
+
+    return {"ok": True}
+
+
 @app.post("/save/demo")
 async def save_demo(req: Request):
     body = await req.json()
@@ -109,29 +141,64 @@ async def save_demo(req: Request):
     if not participant_id:
         raise HTTPException(status_code=400, detail="Missing participant_id")
 
+    speak_english = data.get("speak_english")
     age = data.get("age")
     gender = data.get("gender")
+    residence = data.get("residence")
+    socioeconomic = data.get("socioeconomic")
+    marital_status = data.get("marital_status")
+    education = data.get("education")
+
+    # ---- validations ----
+    if speak_english not in ("yes", "no"):
+        raise HTTPException(status_code=400, detail="speak_english must be yes/no")
 
     if not isinstance(age, int) or age < 18 or age > 99:
-        raise HTTPException(
-            status_code=400, detail="Invalid age (must be integer 18-99)"
-        )
+        raise HTTPException(status_code=400, detail="Invalid age (must be integer 18-99)")
 
-    if not isinstance(gender, str):
-        raise HTTPException(status_code=400, detail="Invalid gender")
+    if gender not in ("male", "female", "other"):
+        raise HTTPException(status_code=400, detail="gender must be male/female/other")
 
-    gender_norm = gender.strip().lower()
-    if gender_norm not in ("male", "female"):
+    if residence not in ("north", "central", "south"):
+        raise HTTPException(status_code=400, detail="residence must be north/central/south")
+
+    if socioeconomic not in ("low", "medium", "high"):
+        raise HTTPException(status_code=400, detail="socioeconomic must be low/medium/high")
+
+    if marital_status not in ("single", "married"):
+        raise HTTPException(status_code=400, detail="marital_status must be single/married")
+
+    if education not in ("until_high_school", "high_school", "ba", "masters_or_higher"):
         raise HTTPException(
-            status_code=400, detail="Invalid gender (must be Male/Female)"
+            status_code=400,
+            detail="education must be until_high_school/high_school/ba/masters_or_higher",
         )
 
     with db() as con:
         ensure_participant_exists(con, participant_id)
 
         con.execute(
-            "UPDATE experiment_results SET age=?, gender=? WHERE participant_id=?",
-            (age, gender_norm, participant_id),
+            """
+            UPDATE experiment_results
+            SET speak_english=?,
+                age=?,
+                gender=?,
+                residence=?,
+                socioeconomic=?,
+                marital_status=?,
+                education=?
+            WHERE participant_id=?
+            """,
+            (
+                speak_english,
+                age,
+                gender,
+                residence,
+                socioeconomic,
+                marital_status,
+                education,
+                participant_id,
+            ),
         )
         con.commit()
 
@@ -146,11 +213,9 @@ async def save_rep(req: Request):
 
     if not participant_id:
         raise HTTPException(status_code=400, detail="Missing participant_id")
-
     if not isinstance(data, list):
         raise HTTPException(status_code=400, detail="Repression data must be a list")
 
-    # Expect list of dicts: {qIndex: 1..15, score: 1..5, ...}
     scores = {}
     for item in data:
         if not isinstance(item, dict):
@@ -175,7 +240,6 @@ async def save_rep(req: Request):
 
     with db() as con:
         ensure_participant_exists(con, participant_id)
-
         con.execute(
             f"UPDATE experiment_results SET {', '.join(cols)} WHERE participant_id=?",
             values,
@@ -196,9 +260,7 @@ async def save_rating(req: Request):
 
     rating = data.get("rating")
     if not isinstance(rating, int) or rating < 1 or rating > 10:
-        raise HTTPException(
-            status_code=400, detail="Invalid rating (must be integer 1-10)"
-        )
+        raise HTTPException(status_code=400, detail="Invalid rating (must be integer 1-10)")
 
     with db() as con:
         ensure_participant_exists(con, participant_id)

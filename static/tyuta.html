@@ -9,17 +9,16 @@
         padding: 20px;
       }
 
-      /* IMPORTANT FIX: always hide, even if other classes set display:flex */
       .hidden {
         display: none !important;
       }
 
-      /* ---------- CENTERED PAGES (Consent/Demo/Rep/Rate/Done) ---------- */
+      /* ---------- CENTERED PAGES ---------- */
       .centerPage {
         display: flex;
-        align-items: center; /* vertical */
-        justify-content: center; /* horizontal */
-        min-height: calc(100vh - 40px); /* account for body padding */
+        align-items: center;
+        justify-content: center;
+        min-height: calc(100vh - 40px);
       }
       .centerBox {
         text-align: center;
@@ -59,7 +58,7 @@
         user-select: none;
       }
 
-      /* ---------- SLOTS / GRID DAY VIEW ---------- */
+      /* ---------- SLOTS ---------- */
       .dayGrid {
         display: grid;
         grid-template-columns: repeat(5, minmax(160px, 1fr));
@@ -99,7 +98,7 @@
         cursor: grab;
       }
 
-      /* ---------- STRESS BANNER (BOTTOM, DOESN'T HIDE SCHEDULE) ---------- */
+      /* ---------- STRESS BANNER ---------- */
       #stress {
         position: fixed;
         left: 50%;
@@ -142,14 +141,14 @@
         animation: stressPulse 0.9s ease-in-out infinite;
       }
 
-      /* ---------- NON-BLOCKING MODAL (REPLACES alert) ---------- */
+      /* ---------- NON-BLOCKING MODAL ---------- */
       #msgModal {
         position: fixed;
         inset: 0;
         display: none;
         align-items: center;
         justify-content: center;
-        z-index: 10050; /* above stress banner */
+        z-index: 10050;
       }
       #msgModal.show {
         display: flex;
@@ -219,16 +218,28 @@
       </div>
     </div>
 
-    <!-- CONSENT (CENTERED) -->
+    <!-- CONSENT -->
     <div id="consent" class="centerPage">
       <div class="centerBox">
         <h2>Consent</h2>
-        <p>I agree to participate in this study.</p>
+        <p>
+          את\ה מוזמן\ת להשתתף במחקר הבודק את השפעת הודעות דחיפות על סטרס
+          סובייקטיבי. המחקר נערך על ידי מיה גרינברג, טוני זוזוט, אילי רייטר וגלי
+          בונפיל, סטודנטיות לתואר ראשון בפסיכולוגיה במכללת האקדמית תל אביב-יפו.
+          אנו מודות לך על הקדשה מזמנך והשתתפות במחקר. ההשתתפות כוללת מילוי
+          שאלונים אינטרנטיים אנונימיים, האורכים כ-10 דקות וכוללים תכנון לוח
+          זמנים ורווחה אישית. במידה ותרגיש\י אי נוחות, אין חובה לענות על כל
+          השאלות, מוזמנים להפסיק בכל שלב. הנתונים שיתקבלו הם לצורכי מחקר בלבד.
+          לא יתקבל רווח אישי מההשתתפפות. לפי הידוע לנו - אין סיכונים מהשתתפות
+          במחקר, אך כמו בכל פעילות הנעשית באופן מכוון, יש סיכון להפרת הפרטיות,
+          אנו עושים כל מאמץ כדי להפחית סיכון על ידי איסוף הנתונים ללא פרטים
+          מזהים.
+        </p>
         <button onclick="start()">I Agree</button>
       </div>
     </div>
 
-    <!-- DEMOGRAPHICS (CENTERED) -->
+    <!-- DEMOGRAPHICS -->
     <div id="demo" class="hidden centerPage">
       <div class="centerBox">
         <h2>Demographics</h2>
@@ -253,7 +264,7 @@
       </div>
     </div>
 
-    <!-- REPRESSION (CENTERED) -->
+    <!-- REPRESSION -->
     <div id="rep" class="hidden centerPage">
       <div class="centerBox">
         <h2>Repression Questionnaire</h2>
@@ -409,7 +420,7 @@
       </div>
     </div>
 
-    <!-- STRESS RATING (CENTERED) -->
+    <!-- STRESS RATING -->
     <div id="rate" class="hidden centerPage">
       <div class="centerBox">
         <h2>Stress Level (1–10)</h2>
@@ -426,7 +437,7 @@
       </div>
     </div>
 
-    <!-- DONE (CENTERED) -->
+    <!-- DONE -->
     <div id="done" class="hidden centerPage">
       <div class="centerBox">
         <h2>Thank you very much!</h2>
@@ -501,7 +512,6 @@
         modal.classList.remove("hidden");
         modal.classList.add("show");
 
-        // focus OK for quick enter
         document.getElementById("msgOkBtn").focus();
       }
 
@@ -513,19 +523,18 @@
 
       document.addEventListener("DOMContentLoaded", () => {
         document.getElementById("msgOkBtn").addEventListener("click", () => {
-          ensureAudio(); // user gesture helps keep audio unlocked
+          ensureAudio();
           hideMsg();
         });
 
-        // clicking backdrop closes too (optional)
         document.getElementById("msgBackdrop").addEventListener("click", () => {
           ensureAudio();
           hideMsg();
         });
       });
 
-      // Repression questionnaire
-      const repQuestions = Array.from({ length: 1 }, (_, i) => `Q${i + 1}`);
+      // Repression questionnaire (15 questions)
+      const repQuestions = Array.from({ length: 15 }, (_, i) => `Q${i + 1}`);
       let repIndex = 0;
       let repAnswers = [];
 
@@ -591,12 +600,13 @@
         }
       }
 
-      function submitDemo() {
+      async function submitDemo() {
         const ageInput = document.getElementById("ageInput");
         const genderInput = document.getElementById("genderInput");
 
         const age = Number(ageInput.value.trim());
-        const gender = genderInput.value.trim().toLowerCase();
+        const genderRaw = genderInput.value.trim();
+        const gender = genderRaw.toLowerCase();
 
         if (!Number.isInteger(age) || age < 18 || age > 99) {
           alert("Please enter a valid age between 18 and 99.");
@@ -610,11 +620,20 @@
           return;
         }
 
-        fetch(`/save/demo`, {
+        // IMPORTANT: await so we know it was saved before moving on
+        const res = await fetch(`/save/demo`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ participant_id: pid, data: { age, gender } }),
+          body: JSON.stringify({
+            participant_id: pid,
+            data: { age, gender: genderRaw },
+          }),
         });
+
+        if (!res.ok) {
+          alert("Failed to save demographics. Please try again.");
+          return;
+        }
 
         show("rep");
         initRepression();
@@ -638,7 +657,7 @@
           .forEach((r) => (r.checked = false));
       }
 
-      function repNext() {
+      async function repNext() {
         const selected = document.querySelector(
           "input[name='repScore']:checked"
         );
@@ -658,11 +677,16 @@
         if (repIndex < repQuestions.length) {
           renderRepQuestion();
         } else {
-          fetch(`/save/rep`, {
+          const res = await fetch(`/save/rep`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ participant_id: pid, data: repAnswers }),
           });
+
+          if (!res.ok) {
+            alert("Failed to save repression questionnaire. Please try again.");
+            return;
+          }
 
           show("exp");
         }
@@ -721,53 +745,43 @@
       function submitExperiment() {
         const remaining = document.querySelectorAll("#tasks .task").length;
         if (remaining > 0) {
-          // NON-BLOCKING: sound keeps playing even while modal is open
           showMsg("Please place all tasks into the schedule before finishing.");
           return;
         }
-
-        const slots = Array.from(document.querySelectorAll("#exp .slot"));
-        const schedule = slots.map((slot) => {
-          const time = slot.dataset.time || "unknown";
-          const tasks = Array.from(slot.querySelectorAll(".task")).map((t) => ({
-            id: t.dataset.taskId,
-            text: t.innerText.trim(),
-            minutes: getTaskMinutes(t),
-          }));
-          const totalMinutes = tasks.reduce((s, t) => s + t.minutes, 0);
-          return { time, tasks, totalMinutes };
-        });
-
-        fetch(`/save/exp`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ participant_id: pid, data: { schedule } }),
-        });
-
         show("rate");
       }
 
-      function finish() {
+      async function finish() {
         const rating = Number(
           document.getElementById("stressRating").value.trim()
         );
-        if (!rating || rating < 1 || rating > 10) {
+        if (!Number.isInteger(rating) || rating < 1 || rating > 10) {
           document.getElementById("rateError").style.display = "block";
           return;
         }
         document.getElementById("rateError").style.display = "none";
 
-        fetch(`/save/rating`, {
+        const r1 = await fetch(`/save/rating`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ participant_id: pid, data: { rating } }),
         });
 
-        fetch("/finish", {
+        if (!r1.ok) {
+          alert("Failed to save stress rating. Please try again.");
+          return;
+        }
+
+        const r2 = await fetch("/finish", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ participant_id: pid }),
         });
+
+        if (!r2.ok) {
+          alert("Failed to finish the experiment. Please try again.");
+          return;
+        }
 
         show("done");
       }

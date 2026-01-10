@@ -13,6 +13,36 @@
         display: none !important;
       }
 
+      /* ---------- TOP NAV (Back / Restart) ---------- */
+      #topNav {
+        position: fixed;
+        top: 10px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: min(760px, calc(100vw - 40px));
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 10px;
+        z-index: 10000;
+        pointer-events: none;
+      }
+      #topNav .navInner {
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+        gap: 10px;
+        pointer-events: auto;
+      }
+      #topNav button {
+        padding: 8px 12px;
+        margin: 0;
+      }
+      #topNav button:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+
       /* ---------- CENTERED PAGES ---------- */
       .centerPage {
         display: flex;
@@ -28,8 +58,39 @@
         display: flex;
         flex-direction: column;
         align-items: center;
-        gap: 10px;
+        gap: 14px;
         margin-top: 14px;
+      }
+
+      /* ---------- radio groups like Google Forms ---------- */
+      .qBlock {
+        width: min(520px, 100%);
+        text-align: center;
+      }
+      .qTitle {
+        font-size: 18px;
+        font-weight: 700;
+        margin-bottom: 8px;
+      }
+      .radioCol {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 10px;
+      }
+      .radioOpt {
+        width: min(360px, 100%);
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+        gap: 10px;
+        padding: 8px 10px;
+        border: 1px solid #ddd;
+        border-radius: 10px;
+        background: #fff;
+      }
+      .radioOpt input[type="radio"] {
+        transform: scale(1.2);
       }
 
       /* ---------- TASKS ---------- */
@@ -170,6 +231,7 @@
       #msgText {
         font-size: 15px;
         margin: 0 0 10px 0;
+        white-space: pre-line;
       }
       #msgOkBtn {
         padding: 9px 18px;
@@ -178,18 +240,13 @@
 
       button {
         padding: 10px 20px;
-        margin-top: 16px;
+        margin-top: 10px;
       }
 
-      input[type="text"],
       input[type="number"] {
         padding: 10px;
         width: 260px;
         max-width: 100%;
-      }
-
-      label {
-        font-size: 16px;
       }
 
       .btnRow {
@@ -197,16 +254,65 @@
         gap: 10px;
         flex-wrap: wrap;
         margin-top: 10px;
+        justify-content: center;
       }
 
       .muted {
         opacity: 0.7;
         font-size: 13px;
       }
+
+      /* ---------- REPRESSION (all questions) ---------- */
+      .repList {
+        width: min(560px, 100%);
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        margin-top: 10px;
+        text-align: left;
+      }
+      .repItem {
+        border: 1px solid #e3e3e3;
+        border-radius: 12px;
+        padding: 12px;
+        background: #fff;
+      }
+      .repItemTitle {
+        font-weight: 700;
+        margin-bottom: 8px;
+        text-align: center;
+      }
+      .repScale {
+        display: flex;
+        justify-content: center;
+        gap: 12px;
+        flex-wrap: wrap;
+      }
+      .repScale label {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+      }
+      #repError {
+        color: #b00020;
+        display: none;
+        text-align: center;
+        margin-top: 8px;
+      }
     </style>
   </head>
 
   <body>
+    <!-- TOP NAV (always visible) -->
+    <div id="topNav">
+      <div class="navInner">
+        <button id="backBtn" type="button" onclick="goBack()">← Back</button>
+        <button id="restartBtn" type="button" onclick="restartExperiment()">
+          ⟲ Restart
+        </button>
+      </div>
+    </div>
+
     <div id="stress">⚠ PLEASE FINISH AS FAST AS POSSIBLE ⚠</div>
 
     <!-- NON-BLOCKING MODAL -->
@@ -222,20 +328,20 @@
     <div id="consent" class="centerPage">
       <div class="centerBox">
         <h2>Consent</h2>
-        <p>
-          את\ה מוזמן\ת להשתתף במחקר הבודק את השפעת הודעות דחיפות על סטרס
-          סובייקטיבי. המחקר נערך על ידי מיה גרינברג, טוני זוזוט, אילי רייטר וגלי
-          בונפיל, סטודנטיות לתואר ראשון בפסיכולוגיה במכללת האקדמית תל אביב-יפו.
-          אנו מודות לך על הקדשה מזמנך והשתתפות במחקר. ההשתתפות כוללת מילוי
-          שאלונים אינטרנטיים אנונימיים, האורכים כ-10 דקות וכוללים תכנון לוח
-          זמנים ורווחה אישית. במידה ותרגיש\י אי נוחות, אין חובה לענות על כל
-          השאלות, מוזמנים להפסיק בכל שלב. הנתונים שיתקבלו הם לצורכי מחקר בלבד.
-          לא יתקבל רווח אישי מההשתתפפות. לפי הידוע לנו - אין סיכונים מהשתתפות
-          במחקר, אך כמו בכל פעילות הנעשית באופן מכוון, יש סיכון להפרת הפרטיות,
-          אנו עושים כל מאמץ כדי להפחית סיכון על ידי איסוף הנתונים ללא פרטים
-          מזהים.
-        </p>
-        <button onclick="start()">I Agree</button>
+        <p>I agree to participate in this study.</p>
+
+        <div class="btnRow">
+          <button onclick="consentAgree()">I Agree</button>
+          <button onclick="consentDisagree()">I Disagree</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- DISAGREE END PAGE -->
+    <div id="disagree" class="hidden centerPage">
+      <div class="centerBox">
+        <h2>Thank you, goodbye.</h2>
+        <p>You may now close this page.</p>
       </div>
     </div>
 
@@ -245,19 +351,128 @@
         <h2>Demographics</h2>
 
         <div class="stack">
-          <input
-            id="ageInput"
-            type="number"
-            placeholder="Age (18-99)"
-            min="18"
-            max="99"
-          />
+          <div class="qBlock">
+            <div class="qTitle">Do you speak English?</div>
+            <div class="radioCol" id="englishGroup">
+              <label class="radioOpt">
+                <input type="radio" name="speakEnglish" value="yes" />
+                Yes
+              </label>
+              <label class="radioOpt">
+                <input type="radio" name="speakEnglish" value="no" />
+                No
+              </label>
+            </div>
+          </div>
 
-          <input
-            id="genderInput"
-            type="text"
-            placeholder="Gender (Male/Female)"
-          />
+          <div class="qBlock">
+            <div class="qTitle">Age (18-99)</div>
+            <input
+              id="ageInput"
+              type="number"
+              min="18"
+              max="99"
+              placeholder="Age"
+            />
+          </div>
+
+          <div class="qBlock">
+            <div class="qTitle">Gender</div>
+            <div class="radioCol" id="genderGroup">
+              <label class="radioOpt">
+                <input type="radio" name="gender" value="male" />
+                Male
+              </label>
+              <label class="radioOpt">
+                <input type="radio" name="gender" value="female" />
+                Female
+              </label>
+              <label class="radioOpt">
+                <input type="radio" name="gender" value="other" />
+                Other
+              </label>
+            </div>
+          </div>
+
+          <div class="qBlock">
+            <div class="qTitle">Residence</div>
+            <div class="radioCol" id="resGroup">
+              <label class="radioOpt">
+                <input type="radio" name="residence" value="north" />
+                North
+              </label>
+              <label class="radioOpt">
+                <input type="radio" name="residence" value="central" />
+                Central
+              </label>
+              <label class="radioOpt">
+                <input type="radio" name="residence" value="south" />
+                South
+              </label>
+            </div>
+          </div>
+
+          <div class="qBlock">
+            <div class="qTitle">Socioeconomic status</div>
+            <div class="radioCol" id="sesGroup">
+              <label class="radioOpt">
+                <input type="radio" name="socioeconomic" value="low" />
+                Low
+              </label>
+              <label class="radioOpt">
+                <input type="radio" name="socioeconomic" value="medium" />
+                Medium
+              </label>
+              <label class="radioOpt">
+                <input type="radio" name="socioeconomic" value="high" />
+                High
+              </label>
+            </div>
+          </div>
+
+          <div class="qBlock">
+            <div class="qTitle">Marital status</div>
+            <div class="radioCol" id="maritalGroup">
+              <label class="radioOpt">
+                <input type="radio" name="marital" value="single" />
+                Single
+              </label>
+              <label class="radioOpt">
+                <input type="radio" name="marital" value="married" />
+                Married
+              </label>
+            </div>
+          </div>
+
+          <div class="qBlock">
+            <div class="qTitle">Level of education</div>
+            <div class="radioCol" id="eduGroup">
+              <label class="radioOpt">
+                <input
+                  type="radio"
+                  name="education"
+                  value="until_high_school"
+                />
+                Until high school
+              </label>
+              <label class="radioOpt">
+                <input type="radio" name="education" value="high_school" />
+                High School
+              </label>
+              <label class="radioOpt">
+                <input type="radio" name="education" value="ba" />
+                B.A
+              </label>
+              <label class="radioOpt">
+                <input
+                  type="radio"
+                  name="education"
+                  value="masters_or_higher"
+                />
+                Master's degree or higher
+              </label>
+            </div>
+          </div>
 
           <button onclick="submitDemo()">Next</button>
         </div>
@@ -268,43 +483,13 @@
     <div id="rep" class="hidden centerPage">
       <div class="centerBox">
         <h2>Repression Questionnaire</h2>
+        <div class="muted">Please answer all questions (1–5).</div>
 
-        <div class="stack" style="align-items: stretch">
-          <div
-            id="repProgress"
-            style="font-size: 14px; opacity: 0.8; text-align: center"
-          ></div>
+        <div id="repContainer" class="repList"></div>
 
-          <div
-            id="repQuestion"
-            style="font-size: 20px; font-weight: 600; text-align: center"
-          ></div>
+        <div id="repError">Please answer all 15 questions to continue.</div>
 
-          <div
-            id="repOptions"
-            style="
-              display: flex;
-              gap: 12px;
-              flex-wrap: wrap;
-              justify-content: center;
-            "
-          >
-            <label><input type="radio" name="repScore" value="1" /> 1</label>
-            <label><input type="radio" name="repScore" value="2" /> 2</label>
-            <label><input type="radio" name="repScore" value="3" /> 3</label>
-            <label><input type="radio" name="repScore" value="4" /> 4</label>
-            <label><input type="radio" name="repScore" value="5" /> 5</label>
-          </div>
-
-          <div
-            id="repError"
-            style="color: #b00020; display: none; text-align: center"
-          >
-            Please select a score (1–5) to continue.
-          </div>
-
-          <button onclick="repNext()">Next</button>
-        </div>
+        <button onclick="repSubmitAll()">Next</button>
       </div>
     </div>
 
@@ -329,7 +514,7 @@
         </div>
       </div>
 
-      <div class="btnRow">
+      <div class="btnRow" style="justify-content: flex-start">
         <button onclick="resetSchedule()">Reset schedule</button>
         <button onclick="submitExperiment()">Finish Tasks</button>
       </div>
@@ -446,17 +631,152 @@
     </div>
 
     <script>
+      // =====================================================
+      // IMPORTANT CHANGE:
+      // Use sessionStorage so closing the tab/window resets
+      // the experiment (no resume next time).
+      // =====================================================
+      const STORAGE = sessionStorage;
+      const LS_KEY = "exp_state_v1";
+
+      function loadState() {
+        try {
+          return JSON.parse(STORAGE.getItem(LS_KEY) || "{}");
+        } catch {
+          return {};
+        }
+      }
+      function saveState(partial) {
+        const cur = loadState();
+        const next = { ...cur, ...partial };
+        STORAGE.setItem(LS_KEY, JSON.stringify(next));
+        return next;
+      }
+      function clearState() {
+        STORAGE.removeItem(LS_KEY);
+      }
+
+      // =========================
+      // Global runtime vars
+      // =========================
       let pid = null;
       let stress = 0;
 
-      // Stress banner only starts when Daily Schedule begins
       let stressStarted = false;
+      let stressFireAt = null;
+      let stressShown = false;
 
       // ---- LOOPING SOUND state ----
       let audioCtx = null;
       let beepTimer = null;
       let beepingActive = false;
 
+      // Audio unlock flag (required by browsers)
+      let audioUnlocked = false;
+
+      // =========================
+      // Nav visibility rules
+      // =========================
+      function updateNavVisibility(pageId) {
+        const backBtn = document.getElementById("backBtn");
+
+        // Hide Back on: Daily Schedule, Disagree Goodbye, Stress Rating, DONE
+        const hideBack =
+          pageId === "exp" ||
+          pageId === "disagree" ||
+          pageId === "rate" ||
+          pageId === "done";
+
+        backBtn.style.display = hideBack ? "none" : "";
+      }
+
+      // =========================
+      // Back / Restart
+      // =========================
+      function getHistory() {
+        const s = loadState();
+        return Array.isArray(s.history) ? s.history : [];
+      }
+      function setHistory(arr) {
+        saveState({ history: arr });
+        updateBackButton();
+      }
+
+      function updateBackButton() {
+        const s = loadState();
+        const pageId = s.currentPage || "consent";
+
+        // Always enforce visibility rule here too (so it can't "come back")
+        updateNavVisibility(pageId);
+
+        const h = getHistory();
+        const backBtn = document.getElementById("backBtn");
+        backBtn.disabled = h.length <= 1;
+      }
+
+      function goBack() {
+        const h = getHistory();
+        if (h.length <= 1) return;
+        h.pop();
+        const prev = h[h.length - 1];
+        setHistory(h);
+        show(prev, { pushHistory: false });
+      }
+
+      function restartExperiment() {
+        hideStress();
+        hideMsg();
+
+        clearState();
+
+        pid = null;
+        stress = 0;
+        stressStarted = false;
+        stressFireAt = null;
+        stressShown = false;
+
+        resetAllInputsAndScheduleUI();
+        show("consent", { pushHistory: true, force: true });
+      }
+
+      // =========================
+      // Helpers: UI reset
+      // =========================
+      function resetAllInputsAndScheduleUI() {
+        document
+          .querySelectorAll('input[name="speakEnglish"]')
+          .forEach((i) => (i.checked = false));
+        document.getElementById("ageInput").value = "";
+        document
+          .querySelectorAll('input[name="gender"]')
+          .forEach((i) => (i.checked = false));
+        document
+          .querySelectorAll('input[name="residence"]')
+          .forEach((i) => (i.checked = false));
+        document
+          .querySelectorAll('input[name="socioeconomic"]')
+          .forEach((i) => (i.checked = false));
+        document
+          .querySelectorAll('input[name="marital"]')
+          .forEach((i) => (i.checked = false));
+        document
+          .querySelectorAll('input[name="education"]')
+          .forEach((i) => (i.checked = false));
+
+        document.getElementById("repError").style.display = "none";
+
+        document.getElementById("stressRating").value = "";
+        document.getElementById("rateError").style.display = "none";
+
+        const tasksContainer = document.getElementById("tasks");
+        document
+          .querySelectorAll(".task")
+          .forEach((t) => tasksContainer.appendChild(t));
+      }
+
+      // =========================
+      // Audio / beeps
+      // =========================
       function ensureAudio() {
         const Ctx = window.AudioContext || window.webkitAudioContext;
         if (!audioCtx && Ctx) audioCtx = new Ctx();
@@ -503,52 +823,36 @@
         }
       }
 
-      // ---------- NON-BLOCKING MESSAGE ----------
-      function showMsg(text) {
-        const modal = document.getElementById("msgModal");
-        const txt = document.getElementById("msgText");
-        txt.innerText = text;
+      function unlockAudioOnce() {
+        if (audioUnlocked) return;
 
-        modal.classList.remove("hidden");
-        modal.classList.add("show");
+        ensureAudio();
+        if (!audioCtx) return;
 
-        document.getElementById("msgOkBtn").focus();
-      }
+        audioCtx
+          .resume()
+          .then(() => {
+            audioUnlocked = true;
 
-      function hideMsg() {
-        const modal = document.getElementById("msgModal");
-        modal.classList.remove("show");
-        modal.classList.add("hidden");
-      }
-
-      document.addEventListener("DOMContentLoaded", () => {
-        document.getElementById("msgOkBtn").addEventListener("click", () => {
-          ensureAudio();
-          hideMsg();
-        });
-
-        document.getElementById("msgBackdrop").addEventListener("click", () => {
-          ensureAudio();
-          hideMsg();
-        });
-      });
-
-      // Repression questionnaire (15 questions)
-      const repQuestions = Array.from({ length: 15 }, (_, i) => `Q${i + 1}`);
-      let repIndex = 0;
-      let repAnswers = [];
-
-      function wireTaskDragHandlers() {
-        document.querySelectorAll(".task").forEach((el) => {
-          el.addEventListener("dragstart", (e) => {
-            ensureAudio();
-            e.dataTransfer.setData("text/plain", el.dataset.taskId);
-          });
-        });
+            const expVisible = !document
+              .getElementById("exp")
+              .classList.contains("hidden");
+            const s = loadState();
+            if (
+              expVisible &&
+              (s.stressShown ||
+                document.getElementById("stress").classList.contains("show"))
+            ) {
+              startBeepLoop();
+            }
+          })
+          .catch(() => {});
       }
 
       function showStress() {
         document.getElementById("stress").classList.add("show");
+        stressShown = true;
+        saveState({ stressShown: true });
         startBeepLoop();
       }
 
@@ -559,137 +863,234 @@
 
       function startStressIfNeeded() {
         if (!stress) return;
-        if (stressStarted) return;
+
+        const s = loadState();
+        if (s.stressShown) {
+          const expVisible = !document
+            .getElementById("exp")
+            .classList.contains("hidden");
+          if (expVisible) showStress();
+          return;
+        }
+
+        if (s.stressFireAt && typeof s.stressFireAt === "number") {
+          stressFireAt = s.stressFireAt;
+        }
+
+        if (!stressFireAt) {
+          const minDelayMs = 5000; // 5 seconds
+          const maxDelayMs = 15000; // 15 seconds
+          const delayMs =
+            minDelayMs +
+            Math.floor(Math.random() * (maxDelayMs - minDelayMs + 1));
+          stressFireAt = Date.now() + delayMs;
+          saveState({ stressFireAt, stressStarted: true });
+        }
+
         stressStarted = true;
 
-        const delayMs = 5000 + Math.floor(Math.random() * 20000);
+        const remaining = stressFireAt - Date.now();
+        if (remaining <= 0) {
+          const expVisible = !document
+            .getElementById("exp")
+            .classList.contains("hidden");
+          if (expVisible) showStress();
+          return;
+        }
+
         setTimeout(() => {
           const expVisible = !document
             .getElementById("exp")
             .classList.contains("hidden");
           if (expVisible) showStress();
-        }, delayMs);
+        }, remaining);
       }
 
-      function start() {
-        ensureAudio();
-        fetch("/start", { method: "POST" })
-          .then((r) => r.json())
-          .then((d) => {
-            pid = d.participant_id;
-            stress = d.stress_condition;
-            show("demo");
-          });
+      function showMsg(text) {
+        unlockAudioOnce();
+        const modal = document.getElementById("msgModal");
+        document.getElementById("msgText").innerText = text;
+
+        modal.classList.remove("hidden");
+        modal.classList.add("show");
+        document.getElementById("msgOkBtn").focus();
       }
 
-      function show(id) {
-        const pages = ["consent", "demo", "rep", "exp", "rate", "done"];
+      function hideMsg() {
+        const modal = document.getElementById("msgModal");
+        modal.classList.remove("show");
+        modal.classList.add("hidden");
+      }
+
+      function show(id, opts = {}) {
+        const { pushHistory = true, force = false } = opts;
+
+        const pages = [
+          "consent",
+          "demo",
+          "rep",
+          "exp",
+          "rate",
+          "done",
+          "disagree",
+        ];
         pages.forEach((p) =>
           document.getElementById(p).classList.add("hidden")
         );
         document.getElementById(id).classList.remove("hidden");
 
+        updateNavVisibility(id);
+
+        if (force || loadState().currentPage !== id) {
+          saveState({ currentPage: id });
+        }
+
+        if (pushHistory) {
+          const h = getHistory();
+          const last = h[h.length - 1];
+          if (last !== id) h.push(id);
+          setHistory(h);
+        } else {
+          updateBackButton();
+        }
+
+        if (id === "rep") {
+          buildRepressionAll();
+          restoreRepUI();
+        }
+
         if (id === "exp") {
           wireTaskDragHandlers();
+          restoreScheduleUI();
           startStressIfNeeded();
+          if (loadState().stressShown) showStress();
         }
 
-        // stress must stop only when moving to rate/done
-        if (id === "rate" || id === "done") {
+        if (id === "rate" || id === "done" || id === "disagree") {
           hideStress();
         }
+
+        if (id === "rate") restoreRatingUI();
+        if (id === "demo") restoreDemoUI();
       }
 
-      async function submitDemo() {
-        const ageInput = document.getElementById("ageInput");
-        const genderInput = document.getElementById("genderInput");
+      const repQuestions = Array.from({ length: 15 }, (_, i) => `Q${i + 1}`);
 
-        const age = Number(ageInput.value.trim());
-        const genderRaw = genderInput.value.trim();
-        const gender = genderRaw.toLowerCase();
+      function buildRepressionAll() {
+        const container = document.getElementById("repContainer");
+        container.innerHTML = "";
 
-        if (!Number.isInteger(age) || age < 18 || age > 99) {
-          alert("Please enter a valid age between 18 and 99.");
-          ageInput.focus();
-          return;
-        }
+        repQuestions.forEach((qText, idx) => {
+          const qIndex = idx + 1;
 
-        if (gender !== "male" && gender !== "female") {
-          alert("Please enter gender as Male or Female.");
-          genderInput.focus();
-          return;
-        }
+          const item = document.createElement("div");
+          item.className = "repItem";
 
-        // IMPORTANT: await so we know it was saved before moving on
-        const res = await fetch(`/save/demo`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            participant_id: pid,
-            data: { age, gender: genderRaw },
-          }),
-        });
+          const title = document.createElement("div");
+          title.className = "repItemTitle";
+          title.innerText = qText;
+          item.appendChild(title);
 
-        if (!res.ok) {
-          alert("Failed to save demographics. Please try again.");
-          return;
-        }
+          const scale = document.createElement("div");
+          scale.className = "repScale";
 
-        show("rep");
-        initRepression();
-      }
+          for (let s = 1; s <= 5; s++) {
+            const lab = document.createElement("label");
+            const inp = document.createElement("input");
+            inp.type = "radio";
+            inp.name = `rep_${qIndex}`;
+            inp.value = String(s);
 
-      function initRepression() {
-        repIndex = 0;
-        repAnswers = [];
-        renderRepQuestion();
-      }
+            inp.addEventListener("change", persistRepUI);
 
-      function renderRepQuestion() {
-        document.getElementById("repError").style.display = "none";
-        document.getElementById("repProgress").innerText = `Question ${
-          repIndex + 1
-        } of ${repQuestions.length}`;
-        document.getElementById("repQuestion").innerText =
-          repQuestions[repIndex];
-        document
-          .querySelectorAll("input[name='repScore']")
-          .forEach((r) => (r.checked = false));
-      }
-
-      async function repNext() {
-        const selected = document.querySelector(
-          "input[name='repScore']:checked"
-        );
-        if (!selected) {
-          document.getElementById("repError").style.display = "block";
-          return;
-        }
-
-        repAnswers.push({
-          qIndex: repIndex + 1,
-          question: repQuestions[repIndex],
-          score: parseInt(selected.value, 10),
-        });
-
-        repIndex++;
-
-        if (repIndex < repQuestions.length) {
-          renderRepQuestion();
-        } else {
-          const res = await fetch(`/save/rep`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ participant_id: pid, data: repAnswers }),
-          });
-
-          if (!res.ok) {
-            alert("Failed to save repression questionnaire. Please try again.");
-            return;
+            lab.appendChild(inp);
+            lab.appendChild(document.createTextNode(` ${s}`));
+            scale.appendChild(lab);
           }
 
-          show("exp");
+          item.appendChild(scale);
+          container.appendChild(item);
+        });
+      }
+
+      function persistRepUI() {
+        const repAnswers = {};
+        for (let i = 1; i <= 15; i++) {
+          const sel = document.querySelector(`input[name="rep_${i}"]:checked`);
+          if (sel) repAnswers[i] = parseInt(sel.value, 10);
         }
+        saveState({ repAnswers });
+      }
+
+      function restoreRepUI() {
+        const s = loadState();
+        const repAnswers = s.repAnswers || {};
+        for (let i = 1; i <= 15; i++) {
+          const v = repAnswers[i];
+          if (v) {
+            const el = document.querySelector(
+              `input[name="rep_${i}"][value="${v}"]`
+            );
+            if (el) el.checked = true;
+          }
+        }
+      }
+
+      async function repSubmitAll() {
+        const answers = [];
+        const missing = [];
+
+        for (let i = 1; i <= 15; i++) {
+          const sel = document.querySelector(`input[name="rep_${i}"]:checked`);
+          if (!sel) missing.push(i);
+          else {
+            answers.push({
+              qIndex: i,
+              question: repQuestions[i - 1],
+              score: parseInt(sel.value, 10),
+            });
+          }
+        }
+
+        if (missing.length > 0) {
+          document.getElementById("repError").style.display = "block";
+          const firstEl = document.querySelector(
+            `input[name="rep_${missing[0]}"]`
+          );
+          if (firstEl)
+            firstEl.scrollIntoView({ behavior: "smooth", block: "center" });
+          return;
+        }
+
+        document.getElementById("repError").style.display = "none";
+
+        if (!pid)
+          return alert(
+            "Missing participant session. Please restart the experiment."
+          );
+
+        const res = await fetch(`/save/rep`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ participant_id: pid, data: answers }),
+        });
+
+        if (!res.ok)
+          return alert(
+            "Failed to save repression questionnaire. Please try again."
+          );
+
+        saveState({ repCompleted: true });
+        show("exp");
+      }
+
+      function wireTaskDragHandlers() {
+        document.querySelectorAll(".task").forEach((el) => {
+          el.addEventListener("dragstart", (e) => {
+            unlockAudioOnce();
+            e.dataTransfer.setData("text/plain", el.dataset.taskId);
+          });
+        });
       }
 
       function allow(e) {
@@ -708,8 +1109,52 @@
         );
       }
 
+      function persistScheduleUI() {
+        const map = {};
+
+        document.querySelectorAll("#tasks .task").forEach((t) => {
+          map[t.dataset.taskId] = "tasks";
+        });
+
+        document.querySelectorAll(".slot").forEach((slot) => {
+          const time = slot.dataset.time;
+          slot.querySelectorAll(".task").forEach((t) => {
+            map[t.dataset.taskId] = time;
+          });
+        });
+
+        saveState({ scheduleMap: map });
+      }
+
+      function restoreScheduleUI() {
+        const s = loadState();
+        const map = s.scheduleMap || null;
+        if (!map) return;
+
+        const tasksContainer = document.getElementById("tasks");
+        document
+          .querySelectorAll(".task")
+          .forEach((t) => tasksContainer.appendChild(t));
+
+        Object.entries(map).forEach(([taskId, place]) => {
+          const taskEl = document.querySelector(
+            `.task[data-task-id="${taskId}"]`
+          );
+          if (!taskEl) return;
+
+          if (place === "tasks") {
+            tasksContainer.appendChild(taskEl);
+            return;
+          }
+
+          const slotEl = document.querySelector(`.slot[data-time="${place}"]`);
+          if (slotEl) slotEl.appendChild(taskEl);
+        });
+      }
+
       function drop(e) {
         e.preventDefault();
+        unlockAudioOnce();
 
         const taskId = e.dataTransfer.getData("text/plain");
         if (!taskId) return;
@@ -726,13 +1171,14 @@
         const taskMinutes = getTaskMinutes(taskEl);
 
         if (slotTotal + taskMinutes > 60) {
-          alert(
+          showMsg(
             `This time slot would exceed 60 minutes.\nCurrent: ${slotTotal} min, task: ${taskMinutes} min.`
           );
           return;
         }
 
         slotEl.appendChild(taskEl);
+        persistScheduleUI();
       }
 
       function resetSchedule() {
@@ -740,15 +1186,217 @@
         document
           .querySelectorAll(".task")
           .forEach((t) => tasksContainer.appendChild(t));
+        persistScheduleUI();
       }
 
       function submitExperiment() {
         const remaining = document.querySelectorAll("#tasks .task").length;
         if (remaining > 0) {
           showMsg("Please place all tasks into the schedule before finishing.");
+          if (loadState().stressShown) showStress();
           return;
         }
         show("rate");
+      }
+
+      function getRadioValue(name) {
+        const el = document.querySelector(`input[name="${name}"]:checked`);
+        return el ? el.value : "";
+      }
+      function setRadioValue(name, value) {
+        const el = document.querySelector(
+          `input[name="${name}"][value="${value}"]`
+        );
+        if (el) el.checked = true;
+      }
+
+      function persistDemoUI() {
+        const speak_english = getRadioValue("speakEnglish");
+        const ageStr = document.getElementById("ageInput").value.trim();
+        const age = ageStr ? Number(ageStr) : "";
+        const gender = getRadioValue("gender");
+        const residence = getRadioValue("residence");
+        const socioeconomic = getRadioValue("socioeconomic");
+        const marital_status = getRadioValue("marital");
+        const education = getRadioValue("education");
+
+        saveState({
+          demoDraft: {
+            speak_english,
+            age,
+            gender,
+            residence,
+            socioeconomic,
+            marital_status,
+            education,
+          },
+        });
+      }
+
+      function restoreDemoUI() {
+        const s = loadState();
+        const d = s.demoDraft || {};
+        if (d.speak_english) setRadioValue("speakEnglish", d.speak_english);
+        if (d.age !== undefined && d.age !== "")
+          document.getElementById("ageInput").value = String(d.age);
+        if (d.gender) setRadioValue("gender", d.gender);
+        if (d.residence) setRadioValue("residence", d.residence);
+        if (d.socioeconomic) setRadioValue("socioeconomic", d.socioeconomic);
+        if (d.marital_status) setRadioValue("marital", d.marital_status);
+        if (d.education) setRadioValue("education", d.education);
+      }
+
+      function wireDemoAutosave() {
+        [
+          'input[name="speakEnglish"]',
+          'input[name="gender"]',
+          'input[name="residence"]',
+          'input[name="socioeconomic"]',
+          'input[name="marital"]',
+          'input[name="education"]',
+        ].forEach((sel) => {
+          document
+            .querySelectorAll(sel)
+            .forEach((el) => el.addEventListener("change", persistDemoUI));
+        });
+
+        document
+          .getElementById("ageInput")
+          .addEventListener("input", persistDemoUI);
+      }
+
+      async function submitDemo() {
+        const speak_english = getRadioValue("speakEnglish");
+        const age = Number(document.getElementById("ageInput").value.trim());
+        const gender = getRadioValue("gender");
+        const residence = getRadioValue("residence");
+        const socioeconomic = getRadioValue("socioeconomic");
+        const marital_status = getRadioValue("marital");
+        const education = getRadioValue("education");
+
+        if (!speak_english) return alert("Please select if you speak English.");
+        if (!Number.isInteger(age) || age < 18 || age > 99)
+          return alert("Please enter a valid age between 18 and 99.");
+        if (!gender) return alert("Please select gender.");
+        if (!residence) return alert("Please select residence.");
+        if (!socioeconomic) return alert("Please select socioeconomic status.");
+        if (!marital_status) return alert("Please select marital status.");
+        if (!education) return alert("Please select education level.");
+
+        if (!pid)
+          return alert(
+            "Missing participant session. Please restart the experiment."
+          );
+
+        const res = await fetch(`/save/demo`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            participant_id: pid,
+            data: {
+              speak_english,
+              age,
+              gender,
+              residence,
+              socioeconomic,
+              marital_status,
+              education,
+            },
+          }),
+        });
+
+        if (!res.ok)
+          return alert("Failed to save demographics. Please try again.");
+
+        saveState({ demoCompleted: true });
+        show("rep");
+      }
+
+      function persistRatingUI() {
+        saveState({
+          ratingDraft: document.getElementById("stressRating").value.trim(),
+        });
+      }
+      function restoreRatingUI() {
+        const s = loadState();
+        if (s.ratingDraft !== undefined && s.ratingDraft !== null) {
+          document.getElementById("stressRating").value = String(s.ratingDraft);
+        }
+      }
+
+      async function consentAgree() {
+        unlockAudioOnce();
+
+        clearState();
+        resetAllInputsAndScheduleUI();
+
+        const resStart = await fetch("/start", { method: "POST" });
+        const d = await resStart.json();
+
+        pid = d.participant_id;
+        stress = d.stress_condition;
+
+        saveState({
+          participant_id: pid,
+          stress_condition: stress,
+          history: ["consent"],
+          currentPage: "consent",
+          stressStarted: false,
+          stressFireAt: null,
+          stressShown: false,
+          scheduleMap: null,
+          repAnswers: null,
+          demoDraft: {},
+          ratingDraft: "",
+        });
+
+        await fetch("/save/consent", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            participant_id: pid,
+            data: { consent_given: 1 },
+          }),
+        });
+
+        show("demo");
+      }
+
+      async function consentDisagree() {
+        unlockAudioOnce();
+
+        clearState();
+        resetAllInputsAndScheduleUI();
+
+        const resStart = await fetch("/start", { method: "POST" });
+        const d = await resStart.json();
+
+        pid = d.participant_id;
+        stress = d.stress_condition;
+
+        saveState({
+          participant_id: pid,
+          stress_condition: stress,
+          history: ["consent"],
+          currentPage: "consent",
+        });
+
+        await fetch("/save/consent", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            participant_id: pid,
+            data: { consent_given: 0 },
+          }),
+        });
+
+        await fetch("/finish", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ participant_id: pid }),
+        });
+
+        show("disagree");
       }
 
       async function finish() {
@@ -761,30 +1409,92 @@
         }
         document.getElementById("rateError").style.display = "none";
 
+        if (!pid)
+          return alert(
+            "Missing participant session. Please restart the experiment."
+          );
+
         const r1 = await fetch(`/save/rating`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ participant_id: pid, data: { rating } }),
         });
-
-        if (!r1.ok) {
-          alert("Failed to save stress rating. Please try again.");
-          return;
-        }
+        if (!r1.ok)
+          return alert("Failed to save stress rating. Please try again.");
 
         const r2 = await fetch("/finish", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ participant_id: pid }),
         });
+        if (!r2.ok)
+          return alert("Failed to finish the experiment. Please try again.");
 
-        if (!r2.ok) {
-          alert("Failed to finish the experiment. Please try again.");
+        saveState({ completed: true, ratingDraft: String(rating) });
+        show("done");
+      }
+
+      document.addEventListener("DOMContentLoaded", () => {
+        ["pointerdown", "touchstart", "keydown", "mousedown"].forEach((evt) => {
+          document.addEventListener(evt, unlockAudioOnce, { passive: true });
+        });
+
+        document.getElementById("msgOkBtn").addEventListener("click", () => {
+          unlockAudioOnce();
+          hideMsg();
+          if (loadState().stressShown) startBeepLoop();
+        });
+        document.getElementById("msgBackdrop").addEventListener("click", () => {
+          unlockAudioOnce();
+          hideMsg();
+          if (loadState().stressShown) startBeepLoop();
+        });
+
+        wireDemoAutosave();
+        document
+          .getElementById("stressRating")
+          .addEventListener("input", persistRatingUI);
+
+        const s = loadState();
+        pid = s.participant_id || null;
+        stress = s.stress_condition || 0;
+
+        stressStarted = !!s.stressStarted;
+        stressFireAt =
+          typeof s.stressFireAt === "number" ? s.stressFireAt : null;
+        stressShown = !!s.stressShown;
+
+        if (!pid) {
+          resetAllInputsAndScheduleUI();
+          saveState({ history: ["consent"], currentPage: "consent" });
+          show("consent", { pushHistory: false, force: true });
           return;
         }
 
-        show("done");
-      }
+        if (!Array.isArray(s.history) || s.history.length === 0) {
+          saveState({ history: ["consent"] });
+        }
+
+        updateBackButton();
+
+        const page = s.currentPage || "consent";
+        show(page, { pushHistory: false, force: true });
+
+        const h = getHistory();
+        if (h[h.length - 1] !== page) {
+          h.push(page);
+          setHistory(h);
+        } else {
+          updateBackButton();
+        }
+
+        const expVisible = !document
+          .getElementById("exp")
+          .classList.contains("hidden");
+        if (expVisible && loadState().stressShown) {
+          document.getElementById("stress").classList.add("show");
+        }
+      });
     </script>
   </body>
 </html>
