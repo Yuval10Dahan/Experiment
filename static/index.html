@@ -1,5 +1,6 @@
-<!DOCTYPE html>
-<html>
+<!doctype html>
+<!-- <html> -->
+<html lang="he" dir="rtl"></html>
   <head>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Psychological Experiment</title>
@@ -7,6 +8,8 @@
       body {
         font-family: Arial;
         padding: 20px;
+        direction: rtl;
+        text-align: right;
       }
 
       .hidden {
@@ -95,12 +98,11 @@
 
       /* ---------- TASKS ---------- */
       #tasks {
-        display: flex;
-        flex-direction: column;
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
         gap: 10px;
         margin-top: 8px;
         margin-bottom: 10px;
-        align-items: flex-start;
       }
 
       .task {
@@ -306,14 +308,14 @@
     <!-- TOP NAV (always visible) -->
     <div id="topNav">
       <div class="navInner">
-        <button id="backBtn" type="button" onclick="goBack()">← Back</button>
+        <button id="backBtn" type="button" onclick="goBack()">→ חזרה</button>
         <button id="restartBtn" type="button" onclick="restartExperiment()">
-          ⟲ Restart
+          ⟲ התחלה מחדש
         </button>
       </div>
     </div>
 
-    <div id="stress">⚠ PLEASE FINISH AS FAST AS POSSIBLE ⚠</div>
+    <div id="stress">⚠ בבקשה לסיים כמה שיותר מהר!!! ⚠</div>
 
     <!-- NON-BLOCKING MODAL -->
     <div id="msgModal" class="hidden">
@@ -327,12 +329,12 @@
     <!-- CONSENT -->
     <div id="consent" class="centerPage">
       <div class="centerBox">
-        <h2>Consent</h2>
-        <p>I agree to participate in this study.</p>
+        <h2>טופס הסכמה</h2>
+        <p>אני מסכים\מסכימה להשתתף במחקר הזה:</p>
 
         <div class="btnRow">
-          <button onclick="consentAgree()">I Agree</button>
-          <button onclick="consentDisagree()">I Disagree</button>
+          <button onclick="consentAgree()">כן</button>
+          <button onclick="consentDisagree()">לא</button>
         </div>
       </div>
     </div>
@@ -340,112 +342,112 @@
     <!-- DISAGREE END PAGE -->
     <div id="disagree" class="hidden centerPage">
       <div class="centerBox">
-        <h2>Thank you, goodbye.</h2>
-        <p>You may now close this page.</p>
+        <h2>תודה רבה ולהתראות!</h2>
+        <p>ניתן לסגור את העמוד כעת.</p>
       </div>
     </div>
 
     <!-- DEMOGRAPHICS -->
     <div id="demo" class="hidden centerPage">
       <div class="centerBox">
-        <h2>Demographics</h2>
+        <h2>שאלון דמוגרפי</h2>
 
         <div class="stack">
           <div class="qBlock">
-            <div class="qTitle">Do you speak English?</div>
+            <div class="qTitle">האם את\ה דובר\ת את השפה האנגלית?</div>
             <div class="radioCol" id="englishGroup">
               <label class="radioOpt">
                 <input type="radio" name="speakEnglish" value="yes" />
-                Yes
+                כן
               </label>
               <label class="radioOpt">
                 <input type="radio" name="speakEnglish" value="no" />
-                No
+                לא
               </label>
             </div>
           </div>
 
           <div class="qBlock">
-            <div class="qTitle">Age (18-99)</div>
+            <div class="qTitle">גיל (18-99)</div>
             <input
               id="ageInput"
               type="number"
               min="18"
               max="99"
-              placeholder="Age"
+              placeholder="גיל"
             />
           </div>
 
           <div class="qBlock">
-            <div class="qTitle">Gender</div>
+            <div class="qTitle">מין</div>
             <div class="radioCol" id="genderGroup">
               <label class="radioOpt">
                 <input type="radio" name="gender" value="male" />
-                Male
+                זכר
               </label>
               <label class="radioOpt">
                 <input type="radio" name="gender" value="female" />
-                Female
+                נקבה
               </label>
               <label class="radioOpt">
                 <input type="radio" name="gender" value="other" />
-                Other
+                אחר
               </label>
             </div>
           </div>
 
           <div class="qBlock">
-            <div class="qTitle">Residence</div>
+            <div class="qTitle">מקום מגורים</div>
             <div class="radioCol" id="resGroup">
               <label class="radioOpt">
                 <input type="radio" name="residence" value="north" />
-                North
+                צפון
               </label>
               <label class="radioOpt">
                 <input type="radio" name="residence" value="central" />
-                Central
+                מרכז
               </label>
               <label class="radioOpt">
                 <input type="radio" name="residence" value="south" />
-                South
+                דרום
               </label>
             </div>
           </div>
 
           <div class="qBlock">
-            <div class="qTitle">Socioeconomic status</div>
+            <div class="qTitle">מצב סוציו-אקונומי (כלכלי)</div>
             <div class="radioCol" id="sesGroup">
               <label class="radioOpt">
                 <input type="radio" name="socioeconomic" value="low" />
-                Low
+                נמוך
               </label>
               <label class="radioOpt">
                 <input type="radio" name="socioeconomic" value="medium" />
-                Medium
+                בינוני
               </label>
               <label class="radioOpt">
                 <input type="radio" name="socioeconomic" value="high" />
-                High
+                גבוה
               </label>
             </div>
           </div>
 
           <div class="qBlock">
-            <div class="qTitle">Marital status</div>
+            <div class="qTitle">מצב משפחתי</div>
             <div class="radioCol" id="maritalGroup">
               <label class="radioOpt">
                 <input type="radio" name="marital" value="single" />
-                Single
+                רווק\ה
               </label>
               <label class="radioOpt">
                 <input type="radio" name="marital" value="married" />
-                Married
+                נשוי\נשואה
               </label>
             </div>
           </div>
 
           <div class="qBlock">
-            <div class="qTitle">Level of education</div>
+            <div class="qTitle">רמת השכלה</div>
             <div class="radioCol" id="eduGroup">
               <label class="radioOpt">
                 <input
@@ -453,15 +455,15 @@
                   name="education"
                   value="until_high_school"
                 />
-                Until high school
+                עד השכלה תיכונית
               </label>
               <label class="radioOpt">
                 <input type="radio" name="education" value="high_school" />
-                High School
+                השכלה תיכונית (בגרות)
               </label>
               <label class="radioOpt">
                 <input type="radio" name="education" value="ba" />
-                B.A
+                תואר ראשון
               </label>
               <label class="radioOpt">
                 <input
@@ -469,12 +471,12 @@
                   name="education"
                   value="masters_or_higher"
                 />
-                Master's degree or higher
+                תואר שני ומעלה
               </label>
             </div>
           </div>
 
-          <button onclick="submitDemo()">Next</button>
+          <button onclick="submitDemo()">המשך</button>
         </div>
       </div>
     </div>
@@ -482,54 +484,76 @@
     <!-- REPRESSION -->
     <div id="rep" class="hidden centerPage">
       <div class="centerBox">
-        <h2>Repression Questionnaire</h2>
-        <div class="muted">Please answer all questions (1–5).</div>
+        <h2>שאלון הדחקה</h2>
+        <div class="muted">בבקשה לענות על כל השאלות:</div>
+        <div class="muted">1 - הכי נמוך</div>
+        <div class="muted">5 - הכי גבוה</div>
 
         <div id="repContainer" class="repList"></div>
 
-        <div id="repError">Please answer all 15 questions to continue.</div>
+        <div id="repError">בבקשה לענות על כל השאלות על מנת להמשיך!</div>
 
-        <button onclick="repSubmitAll()">Next</button>
+        <button onclick="repSubmitAll()">המשך</button>
       </div>
     </div>
 
     <!-- EXPERIMENT -->
     <div id="exp" class="hidden">
-      <h2>Daily Schedule</h2>
+      <h2>לוח זמנים יומי</h2>
 
-      <h4>Tasks</h4>
+      <h4>משימות</h4>
+      <div class="muted">נא לגרור את המשימות למשבצת זמן.</div>
       <div class="muted">
-        Drag tasks into a time slot. Total per slot must be ≤ 60 minutes.
+        סך הזמן בכל משבצת זמן חייב להיות קטן או שווה ל-60 דקות.
       </div>
 
       <div id="tasks">
-        <div class="task" draggable="true" data-task-id="t1" data-minutes="30">
-          Reply to urgent email (30 min)
+        <div class="task" draggable="true" data-task-id="t1" data-minutes="60">
+          אימון - חייב להתקיים בין ארוחת צהריים לארוחת ערב (שעה)
         </div>
-        <div class="task" draggable="true" data-task-id="t2" data-minutes="20">
-          Prepare daily report (20 min)
+        <div class="task" draggable="true" data-task-id="t2" data-minutes="30">
+          איסוף חבילה מהדואר - שעות פתיחה לדואר 09:30-12:00 (חצי שעה)
         </div>
-        <div class="task" draggable="true" data-task-id="t3" data-minutes="15">
-          Schedule meeting (15 min)
+        <div class="task" draggable="true" data-task-id="t3" data-minutes="60">
+          פגישה בעבודה (שעה)
+        </div>
+        <div class="task" draggable="true" data-task-id="t4" data-minutes="30">
+          כביסה (חצי שעה)
+        </div>
+        <div class="task" draggable="true" data-task-id="t5" data-minutes="30">
+          שיחת טלפון לבנק (חצי שעה)
+        </div>
+        <div class="task" draggable="true" data-task-id="t6" data-minutes="60">
+          מענה למיילים והודעות - רק אחרי ארוחת צהריים (שעה)
+        </div>
+        <div class="task" draggable="true" data-task-id="t7" data-minutes="60">
+          זמן למידה - יכול להתקיים בין 15:00-17:00 (שעה)
+        </div>
+        <div class="task" draggable="true" data-task-id="t8" data-minutes="30">
+          ארוחת צהריים (חצי שעה)
+        </div>
+        <div class="task" draggable="true" data-task-id="t9" data-minutes="60">
+          פרזנטציה בעבודה - חייב לקרות לפני הפגישה בעבודה (שעה)
+        </div>
+        <div class="task" draggable="true" data-task-id="t10" data-minutes="60">
+          מסעדה לארוחת ערב עם חברים - החל מ17:00 ורק אחרי אימון (שעה)
+        </div>
+        <div class="task" draggable="true" data-task-id="t11" data-minutes="30">
+          שליחת פרחים וברכה לאמא ליום ההולדת - יכול לקרות עד 11:00 (חצי שעה)
+        </div>
+        <div class="task" draggable="true" data-task-id="t12" data-minutes="30">
+          ארוחת בוקר (חצי שעה)
         </div>
       </div>
 
       <div class="btnRow" style="justify-content: flex-start">
-        <button onclick="resetSchedule()">Reset schedule</button>
-        <button onclick="submitExperiment()">Finish Tasks</button>
+        <button onclick="resetSchedule()">איפוס לוח הזמנים</button>
+        <button onclick="submitExperiment()">סיום</button>
       </div>
 
-      <h4 style="margin-top: 20px">Day</h4>
+      <h4 style="margin-top: 20px">לו"ז יומי:</h4>
 
       <div class="dayGrid">
-        <div
-          class="slot"
-          data-time="08:00"
-          ondragover="allow(event)"
-          ondrop="drop(event)"
-        >
-          <div class="slotHeader">08:00</div>
-        </div>
         <div
           class="slot"
           data-time="09:00"
@@ -602,22 +626,32 @@
         >
           <div class="slotHeader">17:00</div>
         </div>
+        <div
+          class="slot"
+          data-time="18:00"
+          ondragover="allow(event)"
+          ondrop="drop(event)"
+        >
+          <div class="slotHeader">18:00</div>
+        </div>
       </div>
     </div>
 
     <!-- STRESS RATING -->
     <div id="rate" class="hidden centerPage">
       <div class="centerBox">
-        <h2>Stress Level (1–10)</h2>
+        <h2>רמת חרדה (10-1)</h2>
+        <h3>הכי נמוך - 1</h3>
+        <h3>הכי גבוה - 10</h3>
 
         <div class="stack">
           <input id="stressRating" type="number" min="1" max="10" />
 
           <div id="rateError" style="color: #b00020; display: none">
-            Please choose a number between 1 and 10.
+            נא לבחור מספר בין 1 ל-10
           </div>
 
-          <button onclick="finish()">Submit</button>
+          <button onclick="finish()">הגשה</button>
         </div>
       </div>
     </div>
@@ -625,8 +659,8 @@
     <!-- DONE -->
     <div id="done" class="hidden centerPage">
       <div class="centerBox">
-        <h2>Thank you very much!</h2>
-        <p>You may now close this page.</p>
+        <h2>תודה רבה ולהתראות!</h2>
+        <p>ניתן לסגור את העמוד כעת.</p>
       </div>
     </div>
 
@@ -935,7 +969,7 @@
           "disagree",
         ];
         pages.forEach((p) =>
-          document.getElementById(p).classList.add("hidden")
+          document.getElementById(p).classList.add("hidden"),
         );
         document.getElementById(id).classList.remove("hidden");
 
@@ -974,7 +1008,24 @@
         if (id === "demo") restoreDemoUI();
       }
 
-      const repQuestions = Array.from({ length: 15 }, (_, i) => `Q${i + 1}`);
+      // const repQuestions = Array.from({ length: 15 }, (_, i) => `Q${i + 1}`);
+      const repQuestions = [
+        "יש דברים שאני מעדיפ.ה שלא לחשוב עליהם",
+        "לפעמים אני תוהה מדוע יש לי את המחשבות שיש לי",
+        "יש לי מחשבות שאינני מצליח.ה להפסיק",
+        "יש דימויים שעולים במחשבותיי ואינני מצליח.ה למחוק אותם",
+        "מחשבותיי חוזרות לעיתים קרובות לאותו הרעיון",
+        "הלוואי שיכולתי להפסיק לחשוב על דברים מסוימים",
+        "לפעמים המחשבות שלי רצות כל כך מהר שהייתי רוצה לעצור אותן",
+        "אני תמיד מנסה להוציא בעיות מהראש",
+        "יש מחשבות שממשיכות לקפוץ לי לראש",
+        "יש דברים שאני מנסה שלא לחשוב עליהם",
+        "לפעמים אני באמת רוצה להפסיק לחשוב",
+        "לעיתים קרובות אני עושה דברים כדי להסיח את דעתי מהמחשבות שלי",
+        "יש מחשבות שאני מנסה להימנע מהן",
+        "יש הרבה מחשבות שיש לי שאינני מספר.ת עליהן לאף אחד",
+        "לפעמים אני נשאר.ת עסוק.ה רק כדי למנוע ממחשבות לחדור למחשבותיי",
+      ];
 
       function buildRepressionAll() {
         const container = document.getElementById("repContainer");
@@ -1029,7 +1080,7 @@
           const v = repAnswers[i];
           if (v) {
             const el = document.querySelector(
-              `input[name="rep_${i}"][value="${v}"]`
+              `input[name="rep_${i}"][value="${v}"]`,
             );
             if (el) el.checked = true;
           }
@@ -1055,7 +1106,7 @@
         if (missing.length > 0) {
           document.getElementById("repError").style.display = "block";
           const firstEl = document.querySelector(
-            `input[name="rep_${missing[0]}"]`
+            `input[name="rep_${missing[0]}"]`,
           );
           if (firstEl)
             firstEl.scrollIntoView({ behavior: "smooth", block: "center" });
@@ -1066,7 +1117,7 @@
 
         if (!pid)
           return alert(
-            "Missing participant session. Please restart the experiment."
+            "Missing participant session. Please restart the experiment.",
           );
 
         const res = await fetch(`/save/rep`, {
@@ -1077,7 +1128,7 @@
 
         if (!res.ok)
           return alert(
-            "Failed to save repression questionnaire. Please try again."
+            "Failed to save repression questionnaire. Please try again.",
           );
 
         saveState({ repCompleted: true });
@@ -1105,7 +1156,7 @@
       function sumMinutesInSlot(slotEl) {
         return Array.from(slotEl.querySelectorAll(".task")).reduce(
           (sum, t) => sum + getTaskMinutes(t),
-          0
+          0,
         );
       }
 
@@ -1138,7 +1189,7 @@
 
         Object.entries(map).forEach(([taskId, place]) => {
           const taskEl = document.querySelector(
-            `.task[data-task-id="${taskId}"]`
+            `.task[data-task-id="${taskId}"]`,
           );
           if (!taskEl) return;
 
@@ -1160,7 +1211,7 @@
         if (!taskId) return;
 
         const taskEl = document.querySelector(
-          `.task[data-task-id="${taskId}"]`
+          `.task[data-task-id="${taskId}"]`,
         );
         if (!taskEl) return;
 
@@ -1172,7 +1223,7 @@
 
         if (slotTotal + taskMinutes > 60) {
           showMsg(
-            `This time slot would exceed 60 minutes.\nCurrent: ${slotTotal} min, task: ${taskMinutes} min.`
+            `לא ניתן להוסיף את המשימה - משבצת הזמן תחרוג מ-60 דקות\nסך הדקות שכבר במשבצת: ${slotTotal} דקות | אורך המשימה: ${taskMinutes} דקות`,
           );
           return;
         }
@@ -1192,7 +1243,7 @@
       function submitExperiment() {
         const remaining = document.querySelectorAll("#tasks .task").length;
         if (remaining > 0) {
-          showMsg("Please place all tasks into the schedule before finishing.");
+          showMsg("יש לשבץ את כל המשימות בלוח הזמנים לפני הסיום!");
           if (loadState().stressShown) showStress();
           return;
         }
@@ -1205,7 +1256,7 @@
       }
       function setRadioValue(name, value) {
         const el = document.querySelector(
-          `input[name="${name}"][value="${value}"]`
+          `input[name="${name}"][value="${value}"]`,
         );
         if (el) el.checked = true;
       }
@@ -1274,18 +1325,19 @@
         const marital_status = getRadioValue("marital");
         const education = getRadioValue("education");
 
-        if (!speak_english) return alert("Please select if you speak English.");
+        if (!speak_english)
+          return alert("נא לבחור האם את.ה דובר.ת את השפה האנגלית!");
         if (!Number.isInteger(age) || age < 18 || age > 99)
-          return alert("Please enter a valid age between 18 and 99.");
-        if (!gender) return alert("Please select gender.");
-        if (!residence) return alert("Please select residence.");
-        if (!socioeconomic) return alert("Please select socioeconomic status.");
-        if (!marital_status) return alert("Please select marital status.");
-        if (!education) return alert("Please select education level.");
+          return alert("נא להזין גיל תקין בין 18 ל-99!");
+        if (!gender) return alert("נא לבחור מין!");
+        if (!residence) return alert("נא לבחור מקום מגורים!");
+        if (!socioeconomic) return alert("נא לבחור מצב סוציו-אקונומי (כלכלי)!");
+        if (!marital_status) return alert("נא לבחור מצב משפחתי!");
+        if (!education) return alert("נא לבחור רמת השכלה!");
 
         if (!pid)
           return alert(
-            "Missing participant session. Please restart the experiment."
+            "Missing participant session. Please restart the experiment.",
           );
 
         const res = await fetch(`/save/demo`, {
@@ -1401,7 +1453,7 @@
 
       async function finish() {
         const rating = Number(
-          document.getElementById("stressRating").value.trim()
+          document.getElementById("stressRating").value.trim(),
         );
         if (!Number.isInteger(rating) || rating < 1 || rating > 10) {
           document.getElementById("rateError").style.display = "block";
@@ -1411,7 +1463,7 @@
 
         if (!pid)
           return alert(
-            "Missing participant session. Please restart the experiment."
+            "Missing participant session. Please restart the experiment.",
           );
 
         const r1 = await fetch(`/save/rating`, {
