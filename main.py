@@ -1,5 +1,5 @@
 from fastapi import FastAPI, Request, HTTPException
-from fastapi.responses import HTMLResponse
+from fastapi.responses import HTMLResponse, FileResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -292,3 +292,27 @@ async def finish(req: Request):
         con.commit()
 
     return {"done": True}
+
+
+@app.get("/admin/results", response_class=HTMLResponse)
+def get_results():
+    with db() as con:
+        cur = con.cursor()
+        cur.execute("SELECT * FROM experiment_results ORDER BY created_at DESC")
+        rows = cur.fetchall()
+        cols = [description[0] for description in cur.description]
+    
+    html = "<html><head><meta charset='utf-8'><title>Results</title><style>table, th, td {border: 1px solid black; border-collapse: collapse; padding: 5px;}</style></head><body><h1>Experiment Results</h1><table>"
+    html += "<tr>" + "".join(f"<th>{c}</th>" for c in cols) + "</tr>"
+    for row in rows:
+        html += "<tr>" + "".join(f"<td>{v}</td>" for v in row) + "</tr>"
+    html += "</table></body></html>"
+    return html
+
+
+@app.get("/admin/download_db")
+def download_db():
+    import os
+    if not os.path.exists(DB):
+        raise HTTPException(status_code=404, detail="Database file not found.")
+    return FileResponse(DB, filename="experiment.db")
