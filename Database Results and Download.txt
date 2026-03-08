@@ -1,0 +1,7 @@
+In order to see the answer of the users:
+
+https://experiment-ircp.onrender.com/admin/results
+
+In order to download the current database:
+
+https://experiment-ircp.onrender.com/admin/download_db
