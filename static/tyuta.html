@@ -1,12 +1,16 @@
 <!doctype html>
-<html>
+<!-- <html> -->
+<html lang="he" dir="rtl">
   <head>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Psychological Experiment</title>
     <style>
       body {
         font-family: Arial;
+        background: #f5f0e6;
         padding: 20px;
+        direction: rtl;
+        text-align: right;
       }
 
       .hidden {
@@ -95,12 +99,11 @@
 
       /* ---------- TASKS ---------- */
       #tasks {
-        display: flex;
-        flex-direction: column;
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
         gap: 10px;
         margin-top: 8px;
         margin-bottom: 10px;
-        align-items: flex-start;
       }
 
       .task {
@@ -306,14 +309,14 @@
     <!-- TOP NAV (always visible) -->
     <div id="topNav">
       <div class="navInner">
-        <button id="backBtn" type="button" onclick="goBack()">← Back</button>
+        <button id="backBtn" type="button" onclick="goBack()">→ חזרה</button>
         <button id="restartBtn" type="button" onclick="restartExperiment()">
-          ⟲ Restart
+          ⟲ התחלה מחדש
         </button>
       </div>
     </div>
 
-    <div id="stress">⚠ PLEASE FINISH AS FAST AS POSSIBLE ⚠</div>
+    <div id="stress">⚠ בבקשה לסיים כמה שיותר מהר!!! ⚠</div>
 
     <!-- NON-BLOCKING MODAL -->
     <div id="msgModal" class="hidden">
@@ -327,12 +330,12 @@
     <!-- CONSENT -->
     <div id="consent" class="centerPage">
       <div class="centerBox">
-        <h2>Consent</h2>
-        <p>I agree to participate in this study.</p>
+        <h2>טופס הסכמה</h2>
+        <p style="font-size: 22px">אני מסכים\מסכימה להשתתף במחקר הזה:</p>
 
         <div class="btnRow">
-          <button onclick="consentAgree()">I Agree</button>
-          <button onclick="consentDisagree()">I Disagree</button>
+          <button onclick="consentAgree()">כן</button>
+          <button onclick="consentDisagree()">לא</button>
         </div>
       </div>
     </div>
@@ -340,112 +343,112 @@
     <!-- DISAGREE END PAGE -->
     <div id="disagree" class="hidden centerPage">
       <div class="centerBox">
-        <h2>Thank you, goodbye.</h2>
-        <p>You may now close this page.</p>
+        <h2>תודה רבה ולהתראות!</h2>
+        <p style="font-size: 22px">ניתן לסגור את העמוד כעת.</p>
       </div>
     </div>
 
     <!-- DEMOGRAPHICS -->
     <div id="demo" class="hidden centerPage">
       <div class="centerBox">
-        <h2>Demographics</h2>
+        <h2>שאלון דמוגרפי</h2>
 
         <div class="stack">
           <div class="qBlock">
-            <div class="qTitle">Do you speak English?</div>
+            <div class="qTitle">האם את\ה דובר\ת את השפה האנגלית?</div>
             <div class="radioCol" id="englishGroup">
               <label class="radioOpt">
                 <input type="radio" name="speakEnglish" value="yes" />
-                Yes
+                כן
               </label>
               <label class="radioOpt">
                 <input type="radio" name="speakEnglish" value="no" />
-                No
+                לא
               </label>
             </div>
           </div>
 
           <div class="qBlock">
-            <div class="qTitle">Age (18-99)</div>
+            <div class="qTitle">גיל (18-99)</div>
             <input
               id="ageInput"
               type="number"
               min="18"
               max="99"
-              placeholder="Age"
+              placeholder="גיל"
             />
           </div>
 
           <div class="qBlock">
-            <div class="qTitle">Gender</div>
+            <div class="qTitle">מין</div>
             <div class="radioCol" id="genderGroup">
               <label class="radioOpt">
                 <input type="radio" name="gender" value="male" />
-                Male
+                זכר
               </label>
               <label class="radioOpt">
                 <input type="radio" name="gender" value="female" />
-                Female
+                נקבה
               </label>
               <label class="radioOpt">
                 <input type="radio" name="gender" value="other" />
-                Other
+                אחר
               </label>
             </div>
           </div>
 
           <div class="qBlock">
-            <div class="qTitle">Residence</div>
+            <div class="qTitle">מקום מגורים</div>
             <div class="radioCol" id="resGroup">
               <label class="radioOpt">
                 <input type="radio" name="residence" value="north" />
-                North
+                צפון
               </label>
               <label class="radioOpt">
                 <input type="radio" name="residence" value="central" />
-                Central
+                מרכז
               </label>
               <label class="radioOpt">
                 <input type="radio" name="residence" value="south" />
-                South
+                דרום
               </label>
             </div>
           </div>
 
           <div class="qBlock">
-            <div class="qTitle">Socioeconomic status</div>
+            <div class="qTitle">מצב סוציו-אקונומי (כלכלי)</div>
             <div class="radioCol" id="sesGroup">
               <label class="radioOpt">
                 <input type="radio" name="socioeconomic" value="low" />
-                Low
+                נמוך
               </label>
               <label class="radioOpt">
                 <input type="radio" name="socioeconomic" value="medium" />
-                Medium
+                בינוני
               </label>
               <label class="radioOpt">
                 <input type="radio" name="socioeconomic" value="high" />
-                High
+                גבוה
               </label>
             </div>
           </div>
 
           <div class="qBlock">
-            <div class="qTitle">Marital status</div>
+            <div class="qTitle">מצב משפחתי</div>
             <div class="radioCol" id="maritalGroup">
               <label class="radioOpt">
                 <input type="radio" name="marital" value="single" />
-                Single
+                רווק\ה
               </label>
               <label class="radioOpt">
                 <input type="radio" name="marital" value="married" />
-                Married
+                נשוי\נשואה
               </label>
             </div>
           </div>
 
           <div class="qBlock">
-            <div class="qTitle">Level of education</div>
+            <div class="qTitle">רמת השכלה</div>
             <div class="radioCol" id="eduGroup">
               <label class="radioOpt">
                 <input
@@ -453,15 +456,15 @@
                   name="education"
                   value="until_high_school"
                 />
-                Until high school
+                עד השכלה תיכונית
               </label>
               <label class="radioOpt">
                 <input type="radio" name="education" value="high_school" />
-                High School
+                השכלה תיכונית (בגרות)
               </label>
               <label class="radioOpt">
                 <input type="radio" name="education" value="ba" />
-                B.A
+                תואר ראשון
               </label>
               <label class="radioOpt">
                 <input
@@ -469,12 +472,12 @@
                   name="education"
                   value="masters_or_higher"
                 />
-                Master's degree or higher
+                תואר שני ומעלה
               </label>
             </div>
           </div>
 
-          <button onclick="submitDemo()">Next</button>
+          <button onclick="submitDemo()">המשך</button>
         </div>
       </div>
     </div>
@@ -482,54 +485,80 @@
     <!-- REPRESSION -->
     <div id="rep" class="hidden centerPage">
       <div class="centerBox">
-        <h2>Repression Questionnaire</h2>
-        <div class="muted">Please answer all questions (1–5).</div>
+        <h2>שאלון הדחקה</h2>
+        <div class="muted" style="font-size: 22px">
+          בבקשה לענות על כל השאלות:
+        </div>
+        <div class="muted" style="font-size: 15px">1 - הכי נמוך</div>
+        <div class="muted" style="font-size: 15px">5 - הכי גבוה</div>
 
         <div id="repContainer" class="repList"></div>
 
-        <div id="repError">Please answer all 15 questions to continue.</div>
+        <div id="repError">בבקשה לענות על כל השאלות על מנת להמשיך!</div>
 
-        <button onclick="repSubmitAll()">Next</button>
+        <button onclick="repSubmitAll()">המשך</button>
       </div>
     </div>
 
     <!-- EXPERIMENT -->
     <div id="exp" class="hidden">
-      <h2>Daily Schedule</h2>
+      <h2>לוח זמנים יומי</h2>
 
-      <h4>Tasks</h4>
-      <div class="muted">
-        Drag tasks into a time slot. Total per slot must be ≤ 60 minutes.
+      <h4 style="font-size: 18px">משימות</h4>
+      <div class="muted" style="font-size: 22px">
+        נא לגרור את המשימות למשבצת זמן.
+      </div>
+      <div class="muted" style="font-size: 22px">
+        סך הזמן בכל משבצת זמן חייב להיות קטן או שווה ל-60 דקות.
       </div>
 
-      <div id="tasks">
-        <div class="task" draggable="true" data-task-id="t1" data-minutes="30">
-          Reply to urgent email (30 min)
+      <div id="tasks" ondragover="allow(event)" ondrop="dropToTasks(event)">
+        <div class="task" draggable="true" data-task-id="t1" data-minutes="60">
+          אימון - חייב להתקיים בין ארוחת צהריים לארוחת ערב (שעה)
         </div>
-        <div class="task" draggable="true" data-task-id="t2" data-minutes="20">
-          Prepare daily report (20 min)
+        <div class="task" draggable="true" data-task-id="t2" data-minutes="30">
+          איסוף חבילה מהדואר - שעות פתיחה לדואר 09:00-12:00 (חצי שעה)
         </div>
-        <div class="task" draggable="true" data-task-id="t3" data-minutes="15">
-          Schedule meeting (15 min)
+        <div class="task" draggable="true" data-task-id="t3" data-minutes="60">
+          פגישה בעבודה (שעה)
+        </div>
+        <div class="task" draggable="true" data-task-id="t4" data-minutes="30">
+          כביסה (חצי שעה)
+        </div>
+        <div class="task" draggable="true" data-task-id="t5" data-minutes="30">
+          שיחת טלפון לבנק (חצי שעה)
+        </div>
+        <div class="task" draggable="true" data-task-id="t6" data-minutes="60">
+          מענה למיילים והודעות - רק אחרי ארוחת צהריים (שעה)
+        </div>
+        <div class="task" draggable="true" data-task-id="t7" data-minutes="60">
+          זמן למידה - יכול להתקיים בין 15:00-17:00 (שעה)
+        </div>
+        <div class="task" draggable="true" data-task-id="t8" data-minutes="30">
+          ארוחת צהריים (חצי שעה)
+        </div>
+        <div class="task" draggable="true" data-task-id="t9" data-minutes="60">
+          פרזנטציה בעבודה - חייב לקרות לפני הפגישה בעבודה (שעה)
+        </div>
+        <div class="task" draggable="true" data-task-id="t10" data-minutes="60">
+          מסעדה לארוחת ערב עם חברים - החל מ17:00 ורק אחרי אימון (שעה)
+        </div>
+        <div class="task" draggable="true" data-task-id="t11" data-minutes="30">
+          שליחת פרחים וברכה לאמא ליום ההולדת - יכול לקרות עד 11:00 (חצי שעה)
+        </div>
+        <div class="task" draggable="true" data-task-id="t12" data-minutes="30">
+          ארוחת בוקר (חצי שעה)
         </div>
       </div>
 
       <div class="btnRow" style="justify-content: flex-start">
-        <button onclick="resetSchedule()">Reset schedule</button>
-        <button onclick="submitExperiment()">Finish Tasks</button>
+        <button onclick="resetSchedule()">איפוס לוח הזמנים</button>
+        <button onclick="submitExperiment()">סיום</button>
       </div>
 
-      <h4 style="margin-top: 20px">Day</h4>
+      <h4 style="margin-top: 20px">לו"ז יומי:</h4>
 
       <div class="dayGrid">
-        <div
-          class="slot"
-          data-time="08:00"
-          ondragover="allow(event)"
-          ondrop="drop(event)"
-        >
-          <div class="slotHeader">08:00</div>
-        </div>
         <div
           class="slot"
           data-time="09:00"
@@ -602,22 +631,32 @@
         >
           <div class="slotHeader">17:00</div>
         </div>
+        <div
+          class="slot"
+          data-time="18:00"
+          ondragover="allow(event)"
+          ondrop="drop(event)"
+        >
+          <div class="slotHeader">18:00</div>
+        </div>
       </div>
     </div>
 
     <!-- STRESS RATING -->
     <div id="rate" class="hidden centerPage">
       <div class="centerBox">
-        <h2>Stress Level (1–10)</h2>
+        <h2>דרג\י את רמת הסטרס שחווית בזמן המשימה:</h2>
+        <h3>הכי נמוך - 1</h3>
+        <h3>הכי גבוה - 10</h3>
 
         <div class="stack">
           <input id="stressRating" type="number" min="1" max="10" />
 
           <div id="rateError" style="color: #b00020; display: none">
-            Please choose a number between 1 and 10.
+            נא לבחור מספר בין 1 ל-10
           </div>
 
-          <button onclick="finish()">Submit</button>
+          <button onclick="finish()">הגשה</button>
         </div>
       </div>
     </div>
@@ -625,8 +664,8 @@
     <!-- DONE -->
     <div id="done" class="hidden centerPage">
       <div class="centerBox">
-        <h2>Thank you very much!</h2>
-        <p>You may now close this page.</p>
+        <h2>תודה רבה ולהתראות!</h2>
+        <p style="font-size: 22px">ניתן לסגור את העמוד כעת.</p>
       </div>
     </div>
 
@@ -974,7 +1013,24 @@
         if (id === "demo") restoreDemoUI();
       }
 
-      const repQuestions = Array.from({ length: 15 }, (_, i) => `Q${i + 1}`);
+      // const repQuestions = Array.from({ length: 15 }, (_, i) => `Q${i + 1}`);
+      const repQuestions = [
+        "יש דברים שאני מעדיפ.ה שלא לחשוב עליהם",
+        "לפעמים אני תוהה מדוע יש לי את המחשבות שיש לי",
+        "יש לי מחשבות שאינני מצליח.ה להפסיק",
+        "יש דימויים שעולים במחשבותיי ואינני מצליח.ה למחוק אותם",
+        "מחשבותיי חוזרות לעיתים קרובות לאותו הרעיון",
+        "הלוואי שיכולתי להפסיק לחשוב על דברים מסוימים",
+        "לפעמים המחשבות שלי רצות כל כך מהר שהייתי רוצה לעצור אותן",
+        "אני תמיד מנסה להוציא בעיות מהראש",
+        "יש מחשבות שממשיכות לקפוץ לי לראש",
+        "יש דברים שאני מנסה שלא לחשוב עליהם",
+        "לפעמים אני באמת רוצה להפסיק לחשוב",
+        "לעיתים קרובות אני עושה דברים כדי להסיח את דעתי מהמחשבות שלי",
+        "יש מחשבות שאני מנסה להימנע מהן",
+        "יש הרבה מחשבות שיש לי שאינני מספר.ת עליהן לאף אחד",
+        "לפעמים אני נשאר.ת עסוק.ה רק כדי למנוע ממחשבות לחדור למחשבותיי",
+      ];
 
       function buildRepressionAll() {
         const container = document.getElementById("repContainer");
@@ -1109,6 +1165,233 @@
         );
       }
 
+      const TASK_IDS = {
+        WORKOUT: "t1",
+        POST_OFFICE: "t2",
+        WORK_MEETING: "t3",
+        LAUNDRY: "t4",
+        BANK_CALL: "t5",
+        EMAILS: "t6",
+        STUDY: "t7",
+        LUNCH: "t8",
+        PRESENTATION: "t9",
+        DINNER: "t10",
+        FLOWERS: "t11",
+        BREAKFAST: "t12",
+      };
+
+      function timeToMinutes(timeStr) {
+        const [h, m] = timeStr.split(":").map(Number);
+        return h * 60 + m;
+      }
+
+      function getTaskElById(taskId) {
+        return document.querySelector(`.task[data-task-id="${taskId}"]`);
+      }
+
+      function getTaskSlot(taskId) {
+        const taskEl = getTaskElById(taskId);
+        if (!taskEl) return null;
+        return taskEl.closest(".slot");
+      }
+
+      function getTaskTime(taskId) {
+        const slotEl = getTaskSlot(taskId);
+        return slotEl ? slotEl.dataset.time : null;
+      }
+
+      function isTaskPlaced(taskId) {
+        return !!getTaskSlot(taskId);
+      }
+
+      function getTaskStartMinutes(taskId) {
+        const time = getTaskTime(taskId);
+        return time ? timeToMinutes(time) : null;
+      }
+
+      function isStrictlyAfter(taskId, otherTaskId) {
+        const a = getTaskStartMinutes(taskId);
+        const b = getTaskStartMinutes(otherTaskId);
+        return a !== null && b !== null && a > b;
+      }
+
+      function isBetween(taskId, earlierTaskId, laterTaskId) {
+        const t = getTaskStartMinutes(taskId);
+        const a = getTaskStartMinutes(earlierTaskId);
+        const b = getTaskStartMinutes(laterTaskId);
+        return t !== null && a !== null && b !== null && a < t && t < b;
+      }
+
+      const SCHEDULE_RULES = [
+        {
+          id: "emails_requires_lunch",
+          type: "requiresPlaced",
+          taskId: TASK_IDS.EMAILS,
+          requiredTaskId: TASK_IDS.LUNCH,
+          message:
+            "לא ניתן לשבץ 'מענה למיילים והודעות' לפני ש'ארוחת צהריים' שובצה.",
+        },
+        {
+          id: "emails_after_lunch",
+          type: "strictlyAfter",
+          taskId: TASK_IDS.EMAILS,
+          otherTaskId: TASK_IDS.LUNCH,
+          message: "'מענה למיילים והודעות' חייב להשתבץ רק אחרי 'ארוחת צהריים'.",
+        },
+        {
+          id: "presentation_before_meeting",
+          type: "strictlyAfter",
+          taskId: TASK_IDS.WORK_MEETING,
+          otherTaskId: TASK_IDS.PRESENTATION,
+          runOnlyIfBothPlaced: true,
+          message: "'פרזנטציה בעבודה' חייבת לקרות לפני 'פגישה בעבודה'.",
+        },
+        {
+          id: "dinner_from_1700",
+          type: "startsAtOrAfter",
+          taskId: TASK_IDS.DINNER,
+          minTime: "17:00",
+          message: "'מסעדה לארוחת ערב עם חברים' יכולה להשתבץ רק החל מ-17:00.",
+        },
+        {
+          id: "dinner_after_workout",
+          type: "strictlyAfter",
+          taskId: TASK_IDS.DINNER,
+          otherTaskId: TASK_IDS.WORKOUT,
+          message: "'מסעדה לארוחת ערב עם חברים' חייבת להיות אחרי 'אימון'.",
+        },
+        {
+          id: "workout_requires_lunch",
+          type: "requiresPlaced",
+          taskId: TASK_IDS.WORKOUT,
+          requiredTaskId: TASK_IDS.LUNCH,
+          message: "לא ניתן לשבץ 'אימון' לפני שהמשימה 'ארוחת צהריים' שובצה.",
+        },
+        {
+          id: "workout_after_lunch",
+          type: "strictlyAfter",
+          taskId: TASK_IDS.WORKOUT,
+          otherTaskId: TASK_IDS.LUNCH,
+          message: "'אימון' חייב להשתבץ אחרי 'ארוחת צהריים'.",
+        },
+        {
+          id: "workout_between_lunch_and_dinner",
+          type: "between",
+          taskId: TASK_IDS.WORKOUT,
+          earlierTaskId: TASK_IDS.LUNCH,
+          laterTaskId: TASK_IDS.DINNER,
+          message:
+            "'אימון' חייב להשתבץ בין 'ארוחת צהריים' לבין 'ארוחת ערב עם חברים'.",
+        },
+        {
+          id: "post_office_open_hours",
+          type: "allowedSlots",
+          taskId: TASK_IDS.POST_OFFICE,
+          allowedTimes: ["09:00", "10:00", "11:00"],
+          message:
+            "'איסוף חבילה מהדואר' יכול להשתבץ רק ב-09:00, ב-10:00 או ב-11:00.",
+        },
+        {
+          id: "study_allowed_window",
+          type: "allowedSlots",
+          taskId: TASK_IDS.STUDY,
+          allowedTimes: ["15:00", "16:00"],
+          message: "'זמן למידה' יכול להשתבץ רק ב-15:00 או ב-16:00.",
+        },
+        {
+          id: "flowers_before_1100",
+          type: "allowedSlots",
+          taskId: TASK_IDS.FLOWERS,
+          allowedTimes: ["09:00", "10:00"],
+          message:
+            "'שליחת פרחים וברכה לאמא' יכולה להשתבץ רק עד 11:00, כלומר ב-09:00 או ב-10:00.",
+        },
+      ];
+
+      function validateRule(rule) {
+        const taskPlaced = isTaskPlaced(rule.taskId);
+
+        if (rule.runOnlyIfBothPlaced) {
+          const relatedTaskId =
+            rule.otherTaskId || rule.requiredTaskId || rule.earlierTaskId;
+          if (!taskPlaced || !isTaskPlaced(relatedTaskId)) {
+            return { ok: true };
+          }
+        } else if (!taskPlaced) {
+          return { ok: true };
+        }
+
+        switch (rule.type) {
+          case "requiresPlaced": {
+            if (!isTaskPlaced(rule.requiredTaskId)) {
+              return { ok: false, message: rule.message };
+            }
+            return { ok: true };
+          }
+
+          case "strictlyAfter": {
+            if (!isTaskPlaced(rule.otherTaskId)) {
+              return { ok: true };
+            }
+
+            if (!isStrictlyAfter(rule.taskId, rule.otherTaskId)) {
+              return { ok: false, message: rule.message };
+            }
+            return { ok: true };
+          }
+
+          case "between": {
+            if (
+              !isTaskPlaced(rule.earlierTaskId) ||
+              !isTaskPlaced(rule.laterTaskId)
+            ) {
+              return { ok: true };
+            }
+
+            if (!isBetween(rule.taskId, rule.earlierTaskId, rule.laterTaskId)) {
+              return { ok: false, message: rule.message };
+            }
+            return { ok: true };
+          }
+
+          case "startsAtOrAfter": {
+            const start = getTaskStartMinutes(rule.taskId);
+            if (start === null) return { ok: true };
+
+            if (start < timeToMinutes(rule.minTime)) {
+              return { ok: false, message: rule.message };
+            }
+            return { ok: true };
+          }
+
+          case "allowedSlots": {
+            const start = getTaskStartMinutes(rule.taskId);
+            if (start === null) return { ok: true };
+
+            const allowed = rule.allowedTimes.map(timeToMinutes);
+            if (!allowed.includes(start)) {
+              return { ok: false, message: rule.message };
+            }
+            return { ok: true };
+          }
+
+          default:
+            console.warn("Unknown schedule rule type:", rule.type, rule);
+            return { ok: true };
+        }
+      }
+
+      function validateScheduleRules() {
+        for (const rule of SCHEDULE_RULES) {
+          const result = validateRule(rule);
+          if (!result.ok) {
+            return result;
+          }
+        }
+
+        return { ok: true };
+      }
+
       function persistScheduleUI() {
         const map = {};
 
@@ -1167,17 +1450,43 @@
         const slotEl = e.target.closest(".slot");
         if (!slotEl) return;
 
-        const slotTotal = sumMinutesInSlot(slotEl);
-        const taskMinutes = getTaskMinutes(taskEl);
+        const originalParent = taskEl.parentElement;
+        const originalNextSibling = taskEl.nextElementSibling;
 
-        if (slotTotal + taskMinutes > 60) {
+        slotEl.appendChild(taskEl);
+
+        const slotTotal = sumMinutesInSlot(slotEl);
+        if (slotTotal > 60) {
+          if (
+            originalNextSibling &&
+            originalNextSibling.parentElement === originalParent
+          ) {
+            originalParent.insertBefore(taskEl, originalNextSibling);
+          } else {
+            originalParent.appendChild(taskEl);
+          }
+
           showMsg(
-            `This time slot would exceed 60 minutes.\nCurrent: ${slotTotal} min, task: ${taskMinutes} min.`,
+            `לא ניתן להוסיף את המשימה - משבצת הזמן תחרוג מ-60 דקות\nסך הדקות במשבצת: ${slotTotal} דקות`,
           );
           return;
         }
 
-        slotEl.appendChild(taskEl);
+        const validation = validateScheduleRules();
+        if (!validation.ok) {
+          if (
+            originalNextSibling &&
+            originalNextSibling.parentElement === originalParent
+          ) {
+            originalParent.insertBefore(taskEl, originalNextSibling);
+          } else {
+            originalParent.appendChild(taskEl);
+          }
+
+          showMsg(validation.message);
+          return;
+        }
+
         persistScheduleUI();
       }
 
@@ -1189,13 +1498,39 @@
         persistScheduleUI();
       }
 
+      function dropToTasks(e) {
+        e.preventDefault();
+        unlockAudioOnce();
+
+        const taskId = e.dataTransfer.getData("text/plain");
+        if (!taskId) return;
+
+        const taskEl = document.querySelector(
+          `.task[data-task-id="${taskId}"]`,
+        );
+        if (!taskEl) return;
+
+        const tasksContainer = document.getElementById("tasks");
+        tasksContainer.appendChild(taskEl);
+
+        persistScheduleUI();
+      }
+
       function submitExperiment() {
         const remaining = document.querySelectorAll("#tasks .task").length;
         if (remaining > 0) {
-          showMsg("Please place all tasks into the schedule before finishing.");
+          showMsg("יש לשבץ את כל המשימות בלוח הזמנים לפני הסיום!");
           if (loadState().stressShown) showStress();
           return;
         }
+
+        const validation = validateScheduleRules();
+        if (!validation.ok) {
+          showMsg(validation.message);
+          if (loadState().stressShown) showStress();
+          return;
+        }
+
         show("rate");
       }
 
@@ -1274,14 +1609,15 @@
         const marital_status = getRadioValue("marital");
         const education = getRadioValue("education");
 
-        if (!speak_english) return alert("Please select if you speak English.");
+        if (!speak_english)
+          return alert("נא לבחור האם את.ה דובר.ת את השפה האנגלית!");
         if (!Number.isInteger(age) || age < 18 || age > 99)
-          return alert("Please enter a valid age between 18 and 99.");
-        if (!gender) return alert("Please select gender.");
-        if (!residence) return alert("Please select residence.");
-        if (!socioeconomic) return alert("Please select socioeconomic status.");
-        if (!marital_status) return alert("Please select marital status.");
-        if (!education) return alert("Please select education level.");
+          return alert("נא להזין גיל תקין בין 18 ל-99!");
+        if (!gender) return alert("נא לבחור מין!");
+        if (!residence) return alert("נא לבחור מקום מגורים!");
+        if (!socioeconomic) return alert("נא לבחור מצב סוציו-אקונומי (כלכלי)!");
+        if (!marital_status) return alert("נא לבחור מצב משפחתי!");
+        if (!education) return alert("נא לבחור רמת השכלה!");
 
         if (!pid)
           return alert(

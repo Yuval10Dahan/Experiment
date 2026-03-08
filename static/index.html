@@ -1,6 +1,6 @@
 <!doctype html>
 <!-- <html> -->
-<html lang="he" dir="rtl"></html>
+<html lang="he" dir="rtl">
   <head>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Psychological Experiment</title>
@@ -242,8 +242,10 @@
       }
 
       button {
-        padding: 10px 20px;
+        font-size: 20px;
+        padding: 15px 35px;
         margin-top: 10px;
+        border-radius: 10px;
       }
 
       input[type="number"] {
@@ -331,7 +333,7 @@
     <div id="consent" class="centerPage">
       <div class="centerBox">
         <h2>טופס הסכמה</h2>
-        <p style="font-size:22px;">אני מסכים\מסכימה להשתתף במחקר הזה:</p>
+        <p style="font-size: 22px">אני מסכים\מסכימה להשתתף במחקר הזה:</p>
 
         <div class="btnRow">
           <button onclick="consentAgree()">כן</button>
@@ -344,7 +346,7 @@
     <div id="disagree" class="hidden centerPage">
       <div class="centerBox">
         <h2>תודה רבה ולהתראות!</h2>
-        <p style="font-size:22px;">ניתן לסגור את העמוד כעת.</p>
+        <p style="font-size: 22px">ניתן לסגור את העמוד כעת.</p>
       </div>
     </div>
 
@@ -486,9 +488,11 @@
     <div id="rep" class="hidden centerPage">
       <div class="centerBox">
         <h2>שאלון הדחקה</h2>
-        <div class="muted" style="font-size:22px;">בבקשה לענות על כל השאלות:</div>
-        <div class="muted" style="font-size:15px;">1 - הכי נמוך</div>
-        <div class="muted" style="font-size:15px;">5 - הכי גבוה</div>
+        <div class="muted" style="font-size: 22px">
+          בבקשה לענות על כל השאלות:
+        </div>
+        <div class="muted" style="font-size: 15px">1 - הכי נמוך</div>
+        <div class="muted" style="font-size: 15px">5 - הכי גבוה</div>
 
         <div id="repContainer" class="repList"></div>
 
@@ -502,9 +506,11 @@
     <div id="exp" class="hidden">
       <h2>לוח זמנים יומי</h2>
 
-      <h4 style="font-size:18px;">משימות</h4>
-      <div class="muted" style="font-size:22px;">נא לגרור את המשימות למשבצת זמן.</div>
-      <div class="muted" style="font-size:22px;">
+      <h4 style="font-size: 18px">משימות</h4>
+      <div class="muted" style="font-size: 22px">
+        נא לגרור את המשימות למשבצת זמן.
+      </div>
+      <div class="muted" style="font-size: 22px">
         סך הזמן בכל משבצת זמן חייב להיות קטן או שווה ל-60 דקות.
       </div>
 
@@ -661,7 +667,7 @@
     <div id="done" class="hidden centerPage">
       <div class="centerBox">
         <h2>תודה רבה ולהתראות!</h2>
-        <p style="font-size:22px;">ניתן לסגור את העמוד כעת.</p>
+        <p style="font-size: 22px">ניתן לסגור את העמוד כעת.</p>
       </div>
     </div>
 
@@ -1161,7 +1167,6 @@
         );
       }
 
-
       const TASK_IDS = {
         WORKOUT: "t1",
         POST_OFFICE: "t2",
@@ -1285,7 +1290,8 @@
           type: "allowedSlots",
           taskId: TASK_IDS.POST_OFFICE,
           allowedTimes: ["09:00", "10:00", "11:00"],
-          message: "'איסוף חבילה מהדואר' יכול להשתבץ רק ב-09:00, ב-10:00 או ב-11:00.",
+          message:
+            "'איסוף חבילה מהדואר' יכול להשתבץ רק ב-09:00, ב-10:00 או ב-11:00.",
         },
         {
           id: "study_allowed_window",
@@ -1337,7 +1343,10 @@
           }
 
           case "between": {
-            if (!isTaskPlaced(rule.earlierTaskId) || !isTaskPlaced(rule.laterTaskId)) {
+            if (
+              !isTaskPlaced(rule.earlierTaskId) ||
+              !isTaskPlaced(rule.laterTaskId)
+            ) {
               return { ok: true };
             }
 
@@ -1498,7 +1507,9 @@
         const taskId = e.dataTransfer.getData("text/plain");
         if (!taskId) return;
 
-        const taskEl = document.querySelector(`.task[data-task-id="${taskId}"]`);
+        const taskEl = document.querySelector(
+          `.task[data-task-id="${taskId}"]`,
+        );
         if (!taskEl) return;
 
         const tasksContainer = document.getElementById("tasks");
