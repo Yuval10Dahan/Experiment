@@ -436,7 +436,12 @@ async def finish(req: Request):
 def get_results():
     with db() as con:
         cur = con.cursor()
-        cur.execute("SELECT * FROM experiment_results ORDER BY created_at DESC")
+        # cur.execute("SELECT * FROM experiment_results ORDER BY created_at DESC")
+        cur.execute("""
+            SELECT * FROM experiment_results
+            WHERE completed_at IS NOT NULL
+            ORDER BY created_at DESC
+        """)
         rows = cur.fetchall()
         cols = [description[0] for description in cur.description]
     
