@@ -1943,19 +1943,10 @@
           currentPage: "consent",
         });
 
-        await fetch("/save/consent", {
+        await fetch("/submit_disagree", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            participant_id: pid,
-            data: { consent_given: 0 },
-          }),
-        });
-
-        await fetch("/finish", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ participant_id: pid }),
+          body: JSON.stringify({ participant_id: pid, stress_condition: stress }),
         });
 
         show("disagree");
@@ -2041,6 +2032,7 @@
 
         const payload = {
           participant_id: pid,
+          stress_condition: stress,
           data: {
             consent_given: s.consent_given,
             demo: {

@@ -81,19 +81,6 @@ def index():
 async def start():
     pid = str(uuid.uuid4())
     stress = random.choice([0, 1])
-    now = datetime.datetime.now().isoformat()
-
-    with db() as con:
-        con.execute(
-            """
-            INSERT INTO experiment_results (
-                participant_id, stress_condition, created_at, completed_at
-            ) VALUES (?,?,?,?)
-            """,
-            (pid, stress, now, None),
-        )
-        con.commit()
-
     return {"participant_id": pid, "stress_condition": stress}
 
 
@@ -273,10 +260,31 @@ async def save_rating(req: Request):
 
     return {"ok": True}
 
+@app.post("/submit_disagree")
+async def submit_disagree(req: Request):
+    body = await req.json()
+    participant_id = body.get("participant_id")
+    stress_condition = body.get("stress_condition")
+    now = datetime.datetime.now().isoformat()
+    
+    with db() as con:
+        con.execute(
+            """
+            INSERT INTO experiment_results (
+                participant_id, stress_condition, created_at, completed_at, consent_given
+            ) VALUES (?,?,?,?,?)
+            """,
+            (participant_id, stress_condition, now, now, 0),
+        )
+        con.commit()
+    return {"ok": True}
+
 @app.post("/submit_all")
 async def submit_all(req: Request):
     body = await req.json()
     participant_id = body.get("participant_id")
+    stress_condition = body.get("stress_condition")
+    now = datetime.datetime.now().isoformat()
     data = body.get("data") or {}
 
     if not participant_id:
@@ -346,39 +354,53 @@ async def submit_all(req: Request):
     completed_at = datetime.datetime.now().isoformat()
 
     with db() as con:
-        ensure_participant_exists(con, participant_id)
-
         con.execute(
             """
-            UPDATE experiment_results
-            SET consent_given=?,
-                speak_english=?,
-                age=?,
-                gender=?,
-                residence=?,
-                socioeconomic=?,
-                marital_status=?,
-                education=?,
-                repression_q1=?,
-                repression_q2=?,
-                repression_q3=?,
-                repression_q4=?,
-                repression_q5=?,
-                repression_q6=?,
-                repression_q7=?,
-                repression_q8=?,
-                repression_q9=?,
-                repression_q10=?,
-                repression_q11=?,
-                repression_q12=?,
-                repression_q13=?,
-                repression_q14=?,
-                repression_q15=?,
-                stress_level=?,
-                completed_at=?
-            WHERE participant_id=?
+            INSERT INTO experiment_results (
+                participant_id,
+                stress_condition,
+                created_at,
+                completed_at,
+                consent_given,
+                speak_english,
+                age,
+                gender,
+                residence,
+                socioeconomic,
+                marital_status,
+                education,
+                repression_q1,
+                repression_q2,
+                repression_q3,
+                repression_q4,
+                repression_q5,
+                repression_q6,
+                repression_q7,
+                repression_q8,
+                repression_q9,
+                repression_q10,
+                repression_q11,
+                repression_q12,
+                repression_q13,
+                repression_q14,
+                repression_q15,
+                stress_level
+            ) VALUES (
+                ?, ?, ?, ?,
+                ?, ?, ?, ?, ?,
+                ?, ?, ?,
+                ?, ?, ?, ?,
+                ?, ?, ?, ?,
+                ?, ?, ?, ?,
+                ?, ?, ?,
+                ?
+            )
             """,
             (
+                participant_id,
+                stress_condition,
+                now,
+                completed_at,
                 consent_given,
                 speak_english,
                 age,
@@ -403,8 +425,6 @@ async def submit_all(req: Request):
                 scores[14],
                 scores[15],
                 rating,
-                completed_at,
-                participant_id,
             ),
         )
         con.commit()
