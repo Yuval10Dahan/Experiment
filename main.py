@@ -77,23 +77,29 @@ def index():
         return f.read()
 
 
+# @app.post("/start")
+# async def start():
+#     pid = str(uuid.uuid4())
+#     stress = random.choice([0, 1])
+#     now = datetime.datetime.now().isoformat()
+
+#     with db() as con:
+#         con.execute(
+#             """
+#             INSERT INTO experiment_results (
+#                 participant_id, stress_condition, created_at, completed_at
+#             ) VALUES (?,?,?,?)
+#             """,
+#             (pid, stress, now, None),
+#         )
+#         con.commit()
+
+#     return {"participant_id": pid, "stress_condition": stress}
+
 @app.post("/start")
 async def start():
     pid = str(uuid.uuid4())
     stress = random.choice([0, 1])
-    now = datetime.datetime.now().isoformat()
-
-    with db() as con:
-        con.execute(
-            """
-            INSERT INTO experiment_results (
-                participant_id, stress_condition, created_at, completed_at
-            ) VALUES (?,?,?,?)
-            """,
-            (pid, stress, now, None),
-        )
-        con.commit()
-
     return {"participant_id": pid, "stress_condition": stress}
 
 
