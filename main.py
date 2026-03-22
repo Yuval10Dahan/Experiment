@@ -259,8 +259,8 @@ async def save_rating(req: Request):
         raise HTTPException(status_code=400, detail="Missing participant_id")
 
     rating = data.get("rating")
-    if not isinstance(rating, int) or rating < 1 or rating > 10:
-        raise HTTPException(status_code=400, detail="Invalid rating (must be integer 1-10)")
+    if not isinstance(rating, int) or rating < 0 or rating > 100:
+        raise HTTPException(status_code=400, detail="Invalid rating (must be integer 0-100)")
 
     with db() as con:
         ensure_participant_exists(con, participant_id)
@@ -268,6 +268,144 @@ async def save_rating(req: Request):
         con.execute(
             "UPDATE experiment_results SET stress_level=? WHERE participant_id=?",
             (rating, participant_id),
+        )
+        con.commit()
+
+    return {"ok": True}
+
+@app.post("/submit_all")
+async def submit_all(req: Request):
+    body = await req.json()
+    participant_id = body.get("participant_id")
+    data = body.get("data") or {}
+
+    if not participant_id:
+        raise HTTPException(status_code=400, detail="Missing participant_id")
+
+    consent_given = data.get("consent_given")
+    demo = data.get("demo") or {}
+    rep = data.get("rep") or []
+    rating = data.get("rating")
+
+    if consent_given != 1:
+        raise HTTPException(status_code=400, detail="consent_given must be 1")
+
+    speak_english = demo.get("speak_english")
+    age = demo.get("age")
+    gender = demo.get("gender")
+    residence = demo.get("residence")
+    socioeconomic = demo.get("socioeconomic")
+    marital_status = demo.get("marital_status")
+    education = demo.get("education")
+
+    if speak_english not in ("yes", "no"):
+        raise HTTPException(status_code=400, detail="speak_english must be yes/no")
+
+    if not isinstance(age, int) or age < 18 or age > 99:
+        raise HTTPException(status_code=400, detail="Invalid age (must be integer 18-99)")
+
+    if gender not in ("male", "female", "other"):
+        raise HTTPException(status_code=400, detail="gender must be male/female/other")
+
+    if residence not in ("north", "central", "south"):
+        raise HTTPException(status_code=400, detail="residence must be north/central/south")
+
+    if socioeconomic not in ("low", "medium", "high"):
+        raise HTTPException(status_code=400, detail="socioeconomic must be low/medium/high")
+
+    if marital_status not in ("single", "married"):
+        raise HTTPException(status_code=400, detail="marital_status must be single/married")
+
+    if education not in ("until_high_school", "high_school", "ba", "masters_or_higher"):
+        raise HTTPException(
+            status_code=400,
+            detail="education must be until_high_school/high_school/ba/masters_or_higher",
+        )
+
+    scores = {}
+    for item in rep:
+        if not isinstance(item, dict):
+            continue
+        q_idx = item.get("qIndex")
+        score = item.get("score")
+        if (
+            isinstance(q_idx, int)
+            and 1 <= q_idx <= 15
+            and isinstance(score, int)
+            and 1 <= score <= 5
+        ):
+            scores[q_idx] = score
+
+    missing = [i for i in range(1, 16) if i not in scores]
+    if missing:
+        raise HTTPException(status_code=400, detail=f"Missing repression answers: {missing}")
+
+    if not isinstance(rating, int) or rating < 0 or rating > 100:
+        raise HTTPException(status_code=400, detail="Invalid rating (must be integer 0-100)")
+
+    completed_at = datetime.datetime.now().isoformat()
+
+    with db() as con:
+        ensure_participant_exists(con, participant_id)
+
+        con.execute(
+            """
+            UPDATE experiment_results
+            SET consent_given=?,
+                speak_english=?,
+                age=?,
+                gender=?,
+                residence=?,
+                socioeconomic=?,
+                marital_status=?,
+                education=?,
+                repression_q1=?,
+                repression_q2=?,
+                repression_q3=?,
+                repression_q4=?,
+                repression_q5=?,
+                repression_q6=?,
+                repression_q7=?,
+                repression_q8=?,
+                repression_q9=?,
+                repression_q10=?,
+                repression_q11=?,
+                repression_q12=?,
+                repression_q13=?,
+                repression_q14=?,
+                repression_q15=?,
+                stress_level=?,
+                completed_at=?
+            WHERE participant_id=?
+            """,
+            (
+                consent_given,
+                speak_english,
+                age,
+                gender,
+                residence,
+                socioeconomic,
+                marital_status,
+                education,
+                scores[1],
+                scores[2],
+                scores[3],
+                scores[4],
+                scores[5],
+                scores[6],
+                scores[7],
+                scores[8],
+                scores[9],
+                scores[10],
+                scores[11],
+                scores[12],
+                scores[13],
+                scores[14],
+                scores[15],
+                rating,
+                completed_at,
+                participant_id,
+            ),
         )
         con.commit()
 

@@ -162,14 +162,11 @@
         cursor: grab;
       }
 
-      /* ---------- STRESS BANNER ---------- */
       #stress {
-        position: fixed;
-        left: 50%;
-        bottom: 26px;
-        transform: translateX(-50%);
+        width: 100%;
+        max-width: 760px;
+        margin: 20px auto;
 
-        width: min(760px, calc(100vw - 40px));
         padding: 14px 18px;
 
         display: none;
@@ -183,20 +180,17 @@
         background: rgba(255, 80, 80, 0.22);
         border: 2px solid rgba(180, 0, 0, 0.25);
         border-radius: 999px;
-
-        z-index: 9999;
-        pointer-events: none;
       }
 
       @keyframes stressPulse {
         0% {
-          transform: translateX(-50%) scale(1);
+          transform: scale(1);
         }
         50% {
-          transform: translateX(-50%) scale(1.03);
+          transform: scale(1.03);
         }
         100% {
-          transform: translateX(-50%) scale(1);
+          transform: scale(1);
         }
       }
 
@@ -252,6 +246,28 @@
         padding: 10px;
         width: 260px;
         max-width: 100%;
+      }
+
+      .sliderWrap {
+        width: 320px;
+        max-width: 100%;
+        direction: ltr;
+      }
+
+      .sliderLabels {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        width: 100%;
+        font-size: 16px;
+        font-weight: 700;
+        margin-bottom: 6px;
+      }
+
+      input[type="range"] {
+        width: 100%;
+        cursor: pointer;
+        direction: ltr;
       }
 
       .btnRow {
@@ -318,8 +334,6 @@
       </div>
     </div>
 
-    <div id="stress">⚠ בבקשה לסיים כמה שיותר מהר!!! ⚠</div>
-
     <!-- NON-BLOCKING MODAL -->
     <div id="msgModal" class="hidden">
       <div id="msgBackdrop"></div>
@@ -378,7 +392,7 @@
 
         <div class="stack">
           <div class="qBlock">
-            <div class="qTitle">האם את\ה דובר\ת את השפה האנגלית?</div>
+            <div class="qTitle">האם את\ה דובר\ת את השפה העברית?</div>
             <div class="radioCol" id="englishGroup">
               <label class="radioOpt">
                 <input type="radio" name="speakEnglish" value="yes" />
@@ -508,12 +522,11 @@
     <!-- REPRESSION -->
     <div id="rep" class="hidden centerPage">
       <div class="centerBox">
-        <h2>שאלון הדחקה</h2>
         <div class="muted" style="font-size: 22px">
           בבקשה לענות על כל השאלות:
         </div>
-        <div class="muted" style="font-size: 15px">1 - הכי נמוך</div>
-        <div class="muted" style="font-size: 15px">5 - הכי גבוה</div>
+        <div class="muted" style="font-size: 15px">1 - לא מסכים\ה כלל</div>
+        <div class="muted" style="font-size: 15px">5 - מסכים\ה מאוד</div>
 
         <div id="repContainer" class="repList"></div>
 
@@ -574,7 +587,17 @@
         </div>
       </div>
 
+      <div id="stress">⚠ נא לסיים כמה שיותר מהר !!! ⚠</div>
+
       <div class="btnRow" style="justify-content: flex-start">
+        <button
+          id="undoBtn"
+          type="button"
+          class="hidden"
+          onclick="undoLastAction()"
+        >
+          בטל\י את הפעולה האחרונה
+        </button>
         <button onclick="resetSchedule()">איפוס לוח הזמנים</button>
         <button onclick="submitExperiment()">סיום</button>
       </div>
@@ -669,14 +692,33 @@
     <div id="rate" class="hidden centerPage">
       <div class="centerBox">
         <h2>דרג\י את רמת הסטרס שחווית בזמן המשימה:</h2>
-        <h3>הכי נמוך - 1</h3>
-        <h3>הכי גבוה - 10</h3>
+        <h3>הכי נמוך - 0</h3>
+        <h3>הכי גבוה - 100</h3>
 
         <div class="stack">
-          <input id="stressRating" type="number" min="1" max="10" />
+          <div class="sliderWrap">
+            <div class="sliderLabels">
+              <span>0</span>
+              <span>100</span>
+            </div>
+
+            <input
+              id="stressRating"
+              type="range"
+              min="0"
+              max="100"
+              step="1"
+              value="50"
+              oninput="updateStressRatingValue()"
+            />
+          </div>
+
+          <div id="stressRatingValue" style="font-size: 24px; font-weight: 700">
+            50
+          </div>
 
           <div id="rateError" style="color: #b00020; display: none">
-            נא לבחור מספר בין 1 ל-10
+            נא לבחור ערך בין 0 ל-100
           </div>
 
           <button onclick="finish()">הגשה</button>
@@ -727,6 +769,8 @@
       let stressStarted = false;
       let stressFireAt = null;
       let stressShown = false;
+
+      let lastAction = null;
 
       // ---- LOOPING SOUND state ----
       let audioCtx = null;
@@ -796,6 +840,7 @@
         stressStarted = false;
         stressFireAt = null;
         stressShown = false;
+        lastAction = null;
 
         resetAllInputsAndScheduleUI();
         show("consent", { pushHistory: true, force: true });
@@ -804,6 +849,7 @@
       // =========================
       // Helpers: UI reset
       // =========================
+
       function resetAllInputsAndScheduleUI() {
         document
           .querySelectorAll('input[name="speakEnglish"]')
@@ -834,6 +880,9 @@
         document
           .querySelectorAll(".task")
           .forEach((t) => tasksContainer.appendChild(t));
+
+        lastAction = null;
+        setUndoButtonVisibility();
       }
 
       // =========================
@@ -1148,16 +1197,27 @@
             "Missing participant session. Please restart the experiment.",
           );
 
-        const res = await fetch(`/save/rep`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ participant_id: pid, data: answers }),
-        });
+        // const res = await fetch(`/save/rep`, {
+        //   method: "POST",
+        //   headers: { "Content-Type": "application/json" },
+        //   body: JSON.stringify({ participant_id: pid, data: answers }),
+        // });
 
-        if (!res.ok)
-          return alert(
-            "Failed to save repression questionnaire. Please try again.",
-          );
+        // if (!res.ok)
+        //   return alert(
+        //     "Failed to save repression questionnaire. Please try again.",
+        //   );
+
+        const repAnswers = {};
+        for (const item of answers) {
+          repAnswers[item.qIndex] = item.score;
+        }
+
+        saveState({
+          repCompleted: true,
+          repAnswers,
+        });
+        show("exp");
 
         saveState({ repCompleted: true });
         show("exp");
@@ -1458,6 +1518,88 @@
         });
       }
 
+      function setUndoButtonVisibility() {
+        const btn = document.getElementById("undoBtn");
+        if (!btn) return;
+
+        if (lastAction) {
+          btn.classList.remove("hidden");
+        } else {
+          btn.classList.add("hidden");
+        }
+      }
+
+      function saveLastAction(taskEl, fromParent, fromNextSibling) {
+        if (!taskEl || !fromParent) {
+          lastAction = null;
+          setUndoButtonVisibility();
+          return;
+        }
+
+        lastAction = {
+          taskId: taskEl.dataset.taskId,
+          fromParentType: fromParent.id === "tasks" ? "tasks" : "slot",
+          fromTime: fromParent.classList.contains("slot")
+            ? fromParent.dataset.time
+            : null,
+          fromNextSiblingTaskId:
+            fromNextSibling && fromNextSibling.classList.contains("task")
+              ? fromNextSibling.dataset.taskId
+              : null,
+        };
+
+        setUndoButtonVisibility();
+      }
+
+      function undoLastAction() {
+        if (!lastAction) return;
+
+        const taskEl = document.querySelector(
+          `.task[data-task-id="${lastAction.taskId}"]`,
+        );
+        if (!taskEl) {
+          lastAction = null;
+          setUndoButtonVisibility();
+          return;
+        }
+
+        let targetParent = null;
+
+        if (lastAction.fromParentType === "tasks") {
+          targetParent = document.getElementById("tasks");
+        } else if (
+          lastAction.fromParentType === "slot" &&
+          lastAction.fromTime
+        ) {
+          targetParent = document.querySelector(
+            `.slot[data-time="${lastAction.fromTime}"]`,
+          );
+        }
+
+        if (!targetParent) {
+          lastAction = null;
+          setUndoButtonVisibility();
+          return;
+        }
+
+        const nextSibling = lastAction.fromNextSiblingTaskId
+          ? targetParent.querySelector(
+              `.task[data-task-id="${lastAction.fromNextSiblingTaskId}"]`,
+            )
+          : null;
+
+        if (nextSibling) {
+          targetParent.insertBefore(taskEl, nextSibling);
+        } else {
+          targetParent.appendChild(taskEl);
+        }
+
+        persistScheduleUI();
+
+        lastAction = null;
+        setUndoButtonVisibility();
+      }
+
       function drop(e) {
         e.preventDefault();
         unlockAudioOnce();
@@ -1510,6 +1652,7 @@
           return;
         }
 
+        saveLastAction(taskEl, originalParent, originalNextSibling);
         persistScheduleUI();
       }
 
@@ -1518,8 +1661,13 @@
         document
           .querySelectorAll(".task")
           .forEach((t) => tasksContainer.appendChild(t));
+
+        lastAction = null;
+        setUndoButtonVisibility();
         persistScheduleUI();
       }
+
+      //
 
       function dropToTasks(e) {
         e.preventDefault();
@@ -1532,6 +1680,11 @@
           `.task[data-task-id="${taskId}"]`,
         );
         if (!taskEl) return;
+
+        const originalParent = taskEl.parentElement;
+        const originalNextSibling = taskEl.nextElementSibling;
+
+        saveLastAction(taskEl, originalParent, originalNextSibling);
 
         const tasksContainer = document.getElementById("tasks");
         tasksContainer.appendChild(taskEl);
@@ -1633,7 +1786,7 @@
         const education = getRadioValue("education");
 
         if (!speak_english)
-          return alert("נא לבחור האם את.ה דובר.ת את השפה האנגלית!");
+          return alert("נא לבחור האם את.ה דובר.ת את השפה העברית!");
         if (!Number.isInteger(age) || age < 18 || age > 99)
           return alert("נא להזין גיל תקין בין 18 ל-99!");
         if (!gender) return alert("נא לבחור מין!");
@@ -1647,40 +1800,75 @@
             "Missing participant session. Please restart the experiment.",
           );
 
-        const res = await fetch(`/save/demo`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            participant_id: pid,
-            data: {
-              speak_english,
-              age,
-              gender,
-              residence,
-              socioeconomic,
-              marital_status,
-              education,
-            },
-          }),
-        });
+        // const res = await fetch(`/save/demo`, {
+        //   method: "POST",
+        //   headers: { "Content-Type": "application/json" },
+        //   body: JSON.stringify({
+        //     participant_id: pid,
+        //     data: {
+        //       speak_english,
+        //       age,
+        //       gender,
+        //       residence,
+        //       socioeconomic,
+        //       marital_status,
+        //       education,
+        //     },
+        //   }),
+        // });
 
-        if (!res.ok)
-          return alert("Failed to save demographics. Please try again.");
+        // if (!res.ok)
+        //   return alert("Failed to save demographics. Please try again.");
+
+        saveState({
+          demoCompleted: true,
+          demoDraft: {
+            speak_english,
+            age,
+            gender,
+            residence,
+            socioeconomic,
+            marital_status,
+            education,
+          },
+        });
+        show("rep");
 
         saveState({ demoCompleted: true });
         show("rep");
       }
 
       function persistRatingUI() {
-        saveState({
-          ratingDraft: document.getElementById("stressRating").value.trim(),
-        });
+        const value = document.getElementById("stressRating").value;
+        saveState({ ratingDraft: value });
+        updateStressRatingValue();
       }
+
       function restoreRatingUI() {
         const s = loadState();
-        if (s.ratingDraft !== undefined && s.ratingDraft !== null) {
-          document.getElementById("stressRating").value = String(s.ratingDraft);
+        const slider = document.getElementById("stressRating");
+
+        if (!slider) return;
+
+        if (
+          s.ratingDraft !== undefined &&
+          s.ratingDraft !== null &&
+          s.ratingDraft !== ""
+        ) {
+          slider.value = String(s.ratingDraft);
+        } else {
+          slider.value = "50";
         }
+
+        updateStressRatingValue();
+      }
+
+      function updateStressRatingValue() {
+        const slider = document.getElementById("stressRating");
+        const valueEl = document.getElementById("stressRatingValue");
+        if (!slider || !valueEl) return;
+
+        valueEl.innerText = slider.value;
       }
 
       async function consentAgree() {
@@ -1695,28 +1883,43 @@
         pid = d.participant_id;
         stress = d.stress_condition;
 
+        // saveState({
+        //   participant_id: pid,
+        //   stress_condition: stress,
+        //   history: ["consent"],
+        //   currentPage: "consent",
+        //   stressStarted: false,
+        //   stressFireAt: null,
+        //   stressShown: false,
+        //   scheduleMap: null,
+        //   repAnswers: null,
+        //   demoDraft: {},
+        //   ratingDraft: "",
+        // });
+
         saveState({
           participant_id: pid,
           stress_condition: stress,
+          consent_given: 1,
           history: ["consent"],
           currentPage: "consent",
           stressStarted: false,
           stressFireAt: null,
           stressShown: false,
           scheduleMap: null,
-          repAnswers: null,
+          repAnswers: {},
           demoDraft: {},
           ratingDraft: "",
         });
 
-        await fetch("/save/consent", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            participant_id: pid,
-            data: { consent_given: 1 },
-          }),
-        });
+        // await fetch("/save/consent", {
+        //   method: "POST",
+        //   headers: { "Content-Type": "application/json" },
+        //   body: JSON.stringify({
+        //     participant_id: pid,
+        //     data: { consent_given: 1 },
+        //   }),
+        // });
 
         show("demo");
       }
@@ -1758,14 +1961,47 @@
         show("disagree");
       }
 
+      // async function finish() {
+      //   const rating = Number(document.getElementById("stressRating").value);
+      //   if (!Number.isInteger(rating) || rating < 0 || rating > 100) {
+      //     document.getElementById("rateError").style.display = "block";
+      //     return;
+      //   }
+
+      //   document.getElementById("rateError").style.display = "none";
+
+      //   if (!pid)
+      //     return alert(
+      //       "Missing participant session. Please restart the experiment.",
+      //     );
+
+      //   const r1 = await fetch(`/save/rating`, {
+      //     method: "POST",
+      //     headers: { "Content-Type": "application/json" },
+      //     body: JSON.stringify({ participant_id: pid, data: { rating } }),
+      //   });
+      //   if (!r1.ok)
+      //     return alert("Failed to save stress rating. Please try again.");
+
+      //   const r2 = await fetch("/finish", {
+      //     method: "POST",
+      //     headers: { "Content-Type": "application/json" },
+      //     body: JSON.stringify({ participant_id: pid }),
+      //   });
+      //   if (!r2.ok)
+      //     return alert("Failed to finish the experiment. Please try again.");
+
+      //   saveState({ completed: true, ratingDraft: String(rating) });
+      //   show("done");
+      // }
+
       async function finish() {
-        const rating = Number(
-          document.getElementById("stressRating").value.trim(),
-        );
-        if (!Number.isInteger(rating) || rating < 1 || rating > 10) {
+        const rating = Number(document.getElementById("stressRating").value);
+        if (!Number.isInteger(rating) || rating < 0 || rating > 100) {
           document.getElementById("rateError").style.display = "block";
           return;
         }
+
         document.getElementById("rateError").style.display = "none";
 
         if (!pid)
@@ -1773,21 +2009,66 @@
             "Missing participant session. Please restart the experiment.",
           );
 
-        const r1 = await fetch(`/save/rating`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ participant_id: pid, data: { rating } }),
-        });
-        if (!r1.ok)
-          return alert("Failed to save stress rating. Please try again.");
+        const s = loadState();
+        const demo = s.demoDraft || {};
+        const repAnswers = s.repAnswers || {};
 
-        const r2 = await fetch("/finish", {
+        if (!s.consent_given) {
+          return alert("Missing consent data. Please restart the experiment.");
+        }
+
+        if (
+          !demo.speak_english ||
+          !Number.isInteger(Number(demo.age)) ||
+          !demo.gender ||
+          !demo.residence ||
+          !demo.socioeconomic ||
+          !demo.marital_status ||
+          !demo.education
+        ) {
+          return alert(
+            "Missing demographics data. Please restart the experiment.",
+          );
+        }
+
+        for (let i = 1; i <= 15; i++) {
+          if (!Number.isInteger(repAnswers[i])) {
+            return alert(
+              "Missing repression questionnaire data. Please restart the experiment.",
+            );
+          }
+        }
+
+        const payload = {
+          participant_id: pid,
+          data: {
+            consent_given: s.consent_given,
+            demo: {
+              speak_english: demo.speak_english,
+              age: Number(demo.age),
+              gender: demo.gender,
+              residence: demo.residence,
+              socioeconomic: demo.socioeconomic,
+              marital_status: demo.marital_status,
+              education: demo.education,
+            },
+            rep: Array.from({ length: 15 }, (_, idx) => ({
+              qIndex: idx + 1,
+              score: repAnswers[idx + 1],
+            })),
+            rating: rating,
+          },
+        };
+
+        const res = await fetch("/submit_all", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ participant_id: pid }),
+          body: JSON.stringify(payload),
         });
-        if (!r2.ok)
-          return alert("Failed to finish the experiment. Please try again.");
+
+        if (!res.ok) {
+          return alert("Failed to save the questionnaire. Please try again.");
+        }
 
         saveState({ completed: true, ratingDraft: String(rating) });
         show("done");
@@ -1853,6 +2134,8 @@
         if (expVisible && loadState().stressShown) {
           document.getElementById("stress").classList.add("show");
         }
+
+        setUndoButtonVisibility();
       });
     </script>
   </body>
