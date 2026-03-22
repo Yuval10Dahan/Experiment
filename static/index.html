@@ -1197,17 +1197,6 @@
             "Missing participant session. Please restart the experiment.",
           );
 
-        // const res = await fetch(`/save/rep`, {
-        //   method: "POST",
-        //   headers: { "Content-Type": "application/json" },
-        //   body: JSON.stringify({ participant_id: pid, data: answers }),
-        // });
-
-        // if (!res.ok)
-        //   return alert(
-        //     "Failed to save repression questionnaire. Please try again.",
-        //   );
-
         const repAnswers = {};
         for (const item of answers) {
           repAnswers[item.qIndex] = item.score;
@@ -1800,26 +1789,6 @@
             "Missing participant session. Please restart the experiment.",
           );
 
-        // const res = await fetch(`/save/demo`, {
-        //   method: "POST",
-        //   headers: { "Content-Type": "application/json" },
-        //   body: JSON.stringify({
-        //     participant_id: pid,
-        //     data: {
-        //       speak_english,
-        //       age,
-        //       gender,
-        //       residence,
-        //       socioeconomic,
-        //       marital_status,
-        //       education,
-        //     },
-        //   }),
-        // });
-
-        // if (!res.ok)
-        //   return alert("Failed to save demographics. Please try again.");
-
         saveState({
           demoCompleted: true,
           demoDraft: {
@@ -1883,20 +1852,6 @@
         pid = d.participant_id;
         stress = d.stress_condition;
 
-        // saveState({
-        //   participant_id: pid,
-        //   stress_condition: stress,
-        //   history: ["consent"],
-        //   currentPage: "consent",
-        //   stressStarted: false,
-        //   stressFireAt: null,
-        //   stressShown: false,
-        //   scheduleMap: null,
-        //   repAnswers: null,
-        //   demoDraft: {},
-        //   ratingDraft: "",
-        // });
-
         saveState({
           participant_id: pid,
           stress_condition: stress,
@@ -1911,15 +1866,6 @@
           demoDraft: {},
           ratingDraft: "",
         });
-
-        // await fetch("/save/consent", {
-        //   method: "POST",
-        //   headers: { "Content-Type": "application/json" },
-        //   body: JSON.stringify({
-        //     participant_id: pid,
-        //     data: { consent_given: 1 },
-        //   }),
-        // });
 
         show("demo");
       }
@@ -1946,45 +1892,14 @@
         await fetch("/submit_disagree", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ participant_id: pid, stress_condition: stress }),
+          body: JSON.stringify({
+            participant_id: pid,
+            stress_condition: stress,
+          }),
         });
 
         show("disagree");
       }
-
-      // async function finish() {
-      //   const rating = Number(document.getElementById("stressRating").value);
-      //   if (!Number.isInteger(rating) || rating < 0 || rating > 100) {
-      //     document.getElementById("rateError").style.display = "block";
-      //     return;
-      //   }
-
-      //   document.getElementById("rateError").style.display = "none";
-
-      //   if (!pid)
-      //     return alert(
-      //       "Missing participant session. Please restart the experiment.",
-      //     );
-
-      //   const r1 = await fetch(`/save/rating`, {
-      //     method: "POST",
-      //     headers: { "Content-Type": "application/json" },
-      //     body: JSON.stringify({ participant_id: pid, data: { rating } }),
-      //   });
-      //   if (!r1.ok)
-      //     return alert("Failed to save stress rating. Please try again.");
-
-      //   const r2 = await fetch("/finish", {
-      //     method: "POST",
-      //     headers: { "Content-Type": "application/json" },
-      //     body: JSON.stringify({ participant_id: pid }),
-      //   });
-      //   if (!r2.ok)
-      //     return alert("Failed to finish the experiment. Please try again.");
-
-      //   saveState({ completed: true, ratingDraft: String(rating) });
-      //   show("done");
-      // }
 
       async function finish() {
         const rating = Number(document.getElementById("stressRating").value);
