@@ -8,6 +8,9 @@ import uuid
 import random
 import datetime
 
+def get_israel_time():
+    return datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=2))).isoformat()
+
 app = FastAPI()
 
 # Allow browser requests freely (fine for simple experiment)
@@ -81,7 +84,11 @@ def index():
 async def start():
     pid = str(uuid.uuid4())
     stress = random.choice([0, 1])
-    return {"participant_id": pid, "stress_condition": stress}
+    return {
+        "participant_id": pid,
+        "stress_condition": stress,
+        "start_time": get_israel_time()
+    }
 
 
 def ensure_participant_exists(con, participant_id: str):
@@ -265,7 +272,8 @@ async def submit_disagree(req: Request):
     body = await req.json()
     participant_id = body.get("participant_id")
     stress_condition = body.get("stress_condition")
-    now = datetime.datetime.now().isoformat()
+    start_time = body.get("start_time") or get_israel_time()
+    completed_at = get_israel_time()
     
     with db() as con:
         con.execute(
@@ -274,7 +282,7 @@ async def submit_disagree(req: Request):
                 participant_id, stress_condition, created_at, completed_at, consent_given
             ) VALUES (?,?,?,?,?)
             """,
-            (participant_id, stress_condition, now, now, 0),
+            (participant_id, stress_condition, start_time, completed_at, 0),
         )
         con.commit()
     return {"ok": True}
@@ -284,7 +292,7 @@ async def submit_all(req: Request):
     body = await req.json()
     participant_id = body.get("participant_id")
     stress_condition = body.get("stress_condition")
-    now = datetime.datetime.now().isoformat()
+    start_time = body.get("start_time") or get_israel_time()
     data = body.get("data") or {}
 
     if not participant_id:
@@ -351,7 +359,7 @@ async def submit_all(req: Request):
     if not isinstance(rating, int) or rating < 0 or rating > 100:
         raise HTTPException(status_code=400, detail="Invalid rating (must be integer 0-100)")
 
-    completed_at = datetime.datetime.now().isoformat()
+    completed_at = get_israel_time()
 
     with db() as con:
         con.execute(
@@ -399,7 +407,7 @@ async def submit_all(req: Request):
             (
                 participant_id,
                 stress_condition,
-                now,
+                start_time,
                 completed_at,
                 consent_given,
                 speak_english,
@@ -445,7 +453,7 @@ async def finish(req: Request):
 
         con.execute(
             "UPDATE experiment_results SET completed_at=? WHERE participant_id=?",
-            (datetime.datetime.now().isoformat(), participant_id),
+            (get_israel_time(), participant_id),
         )
         con.commit()
 

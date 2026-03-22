@@ -1851,10 +1851,12 @@
 
         pid = d.participant_id;
         stress = d.stress_condition;
+        const start_time = d.start_time;
 
         saveState({
           participant_id: pid,
           stress_condition: stress,
+          start_time: start_time,
           consent_given: 1,
           history: ["consent"],
           currentPage: "consent",
@@ -1881,10 +1883,12 @@
 
         pid = d.participant_id;
         stress = d.stress_condition;
+        const start_time = d.start_time;
 
         saveState({
           participant_id: pid,
           stress_condition: stress,
+          start_time: start_time,
           history: ["consent"],
           currentPage: "consent",
         });
@@ -1895,6 +1899,7 @@
           body: JSON.stringify({
             participant_id: pid,
             stress_condition: stress,
+            start_time: start_time,
           }),
         });
 
@@ -1948,6 +1953,7 @@
         const payload = {
           participant_id: pid,
           stress_condition: stress,
+          start_time: s.start_time,
           data: {
             consent_given: s.consent_given,
             demo: {
