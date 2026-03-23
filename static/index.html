@@ -954,7 +954,7 @@
               (s.stressShown ||
                 document.getElementById("stress").classList.contains("show"))
             ) {
-              startBeepLoop();
+              // startBeepLoop();
             }
           })
           .catch(() => {});
@@ -964,12 +964,12 @@
         document.getElementById("stress").classList.add("show");
         stressShown = true;
         saveState({ stressShown: true });
-        startBeepLoop();
+        // startBeepLoop();
       }
 
       function hideStress() {
         document.getElementById("stress").classList.remove("show");
-        stopBeepLoop();
+        // stopBeepLoop();
       }
 
       function startStressIfNeeded() {
