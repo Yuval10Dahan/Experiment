@@ -1018,7 +1018,7 @@
       }
 
       function showMsg(text) {
-        unlockAudioOnce();
+        // unlockAudioOnce();
         const modal = document.getElementById("msgModal");
         document.getElementById("msgText").innerText = text;
 
@@ -1215,7 +1215,7 @@
       function wireTaskDragHandlers() {
         document.querySelectorAll(".task").forEach((el) => {
           el.addEventListener("dragstart", (e) => {
-            unlockAudioOnce();
+            // unlockAudioOnce();
             e.dataTransfer.setData("text/plain", el.dataset.taskId);
           });
         });
@@ -1591,7 +1591,7 @@
 
       function drop(e) {
         e.preventDefault();
-        unlockAudioOnce();
+        // unlockAudioOnce();
 
         const taskId = e.dataTransfer.getData("text/plain");
         if (!taskId) return;
@@ -1660,7 +1660,7 @@
 
       function dropToTasks(e) {
         e.preventDefault();
-        unlockAudioOnce();
+        // unlockAudioOnce();
 
         const taskId = e.dataTransfer.getData("text/plain");
         if (!taskId) return;
@@ -1841,7 +1841,7 @@
       }
 
       async function consentAgree() {
-        unlockAudioOnce();
+        // unlockAudioOnce();
 
         clearState();
         resetAllInputsAndScheduleUI();
@@ -1873,7 +1873,7 @@
       }
 
       async function consentDisagree() {
-        unlockAudioOnce();
+        // unlockAudioOnce();
 
         clearState();
         resetAllInputsAndScheduleUI();
@@ -1992,15 +1992,23 @@
           document.addEventListener(evt, unlockAudioOnce, { passive: true });
         });
 
+        // document.getElementById("msgOkBtn").addEventListener("click", () => {
+        //   unlockAudioOnce();
+        //   hideMsg();
+        //   if (loadState().stressShown) startBeepLoop();
+        // });
+        // document.getElementById("msgBackdrop").addEventListener("click", () => {
+        //   unlockAudioOnce();
+        //   hideMsg();
+        //   if (loadState().stressShown) startBeepLoop();
+        // });
+
         document.getElementById("msgOkBtn").addEventListener("click", () => {
-          unlockAudioOnce();
           hideMsg();
-          if (loadState().stressShown) startBeepLoop();
         });
+
         document.getElementById("msgBackdrop").addEventListener("click", () => {
-          unlockAudioOnce();
           hideMsg();
-          if (loadState().stressShown) startBeepLoop();
         });
 
         wireDemoAutosave();
